@@ -1,10 +1,11 @@
 import '../../xml/utils/attribute_type.dart';
+import '../range.dart';
 import 'named.dart';
 import 'parented.dart';
 
 /// Immutable attributes of XML events.
 class XmlEventAttribute with XmlNamed, XmlParented {
-  XmlEventAttribute(this.name, this.value, this.attributeType);
+  XmlEventAttribute(this.name, this.value, this.attributeType, [this.sourceRange]);
 
   @override
   final String name;
@@ -12,7 +13,9 @@ class XmlEventAttribute with XmlNamed, XmlParented {
   final String value;
 
   final XmlAttributeType attributeType;
-
+  
+  final XmlEventSourceRange? sourceRange;
+  
   @override
   int get hashCode => name.hashCode ^ value.hashCode;
 

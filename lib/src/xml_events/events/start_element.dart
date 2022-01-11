@@ -2,13 +2,14 @@ import 'package:collection/collection.dart' show ListEquality;
 
 import '../../xml/utils/node_type.dart';
 import '../event.dart';
+import '../range.dart';
 import '../utils/event_attribute.dart';
 import '../utils/named.dart';
 import '../visitor.dart';
 
 /// Event of an XML start element node.
 class XmlStartElementEvent extends XmlEvent with XmlNamed {
-  XmlStartElementEvent(this.name, this.attributes, this.isSelfClosing);
+  XmlStartElementEvent(this.name, this.attributes, this.isSelfClosing, [this.sourceRange]);
 
   @override
   final String name;
@@ -16,6 +17,8 @@ class XmlStartElementEvent extends XmlEvent with XmlNamed {
   final List<XmlEventAttribute> attributes;
 
   final bool isSelfClosing;
+
+  final XmlEventSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.ELEMENT;

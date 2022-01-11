@@ -1,12 +1,14 @@
 import '../../xml/utils/node_type.dart';
 import '../event.dart';
 import '../visitor.dart';
+import '../range.dart';
 
 /// Event of an XML comment node.
 class XmlCommentEvent extends XmlEvent {
-  XmlCommentEvent(this.text);
+  XmlCommentEvent(this.text, [this.sourceRange]);
 
   final String text;
+  final XmlEventSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.COMMENT;

@@ -1,14 +1,17 @@
 import '../../xml/utils/node_type.dart';
 import '../event.dart';
 import '../visitor.dart';
+import '../range.dart';
 
 /// Event of an XML processing node.
 class XmlProcessingEvent extends XmlEvent {
-  XmlProcessingEvent(this.target, this.text);
+  XmlProcessingEvent(this.target, this.text, [this.sourceRange]);
 
   final String target;
 
   final String text;
+
+  final XmlEventSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.PROCESSING;

@@ -1,12 +1,14 @@
 import '../../xml/utils/node_type.dart';
 import '../event.dart';
+import '../range.dart';
 import '../visitor.dart';
 
 /// Event of an XML text node.
 class XmlTextEvent extends XmlEvent {
-  XmlTextEvent(this.text);
+  XmlTextEvent(this.text, [this.sourceRange]);
 
   final String text;
+  final XmlEventSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.TEXT;

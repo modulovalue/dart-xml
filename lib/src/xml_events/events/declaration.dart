@@ -4,12 +4,14 @@ import '../../xml/utils/node_type.dart';
 import '../event.dart';
 import '../utils/event_attribute.dart';
 import '../visitor.dart';
+import '../range.dart';
 
 /// Event of an XML declaration.
 class XmlDeclarationEvent extends XmlEvent {
-  XmlDeclarationEvent(this.attributes);
+  XmlDeclarationEvent(this.attributes, [this.sourceRange]);
 
   final List<XmlEventAttribute> attributes;
+  final XmlEventSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.DECLARATION;

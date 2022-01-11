@@ -1,12 +1,14 @@
 import '../../xml/utils/node_type.dart';
 import '../event.dart';
 import '../visitor.dart';
+import '../range.dart';
 
 /// Event of an XML doctype node.
 class XmlDoctypeEvent extends XmlEvent {
-  XmlDoctypeEvent(this.text);
+  XmlDoctypeEvent(this.text, [this.sourceRange]);
 
   final String text;
+  final XmlEventSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.DOCUMENT_TYPE;
