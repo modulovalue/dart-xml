@@ -1,4 +1,4 @@
-import '../nodes/interface.dart';
+import '../nodes/synthetic_interface.dart';
 import 'node_type.dart';
 
 extension XmlNormalizerExtension on XmlNode {

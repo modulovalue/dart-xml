@@ -2,6 +2,8 @@ import 'package:petitparser/petitparser.dart';
 
 import '../../../xml.dart';
 import '../utils/cache.dart';
+import 'natural_impl.dart';
+import 'natural_interface.dart';
 
 /// Return an [XmlDocument] for the given [input] string, or throws an
 /// [XmlParserException] if the input is invalid.
@@ -25,13 +27,13 @@ XmlDocument parseXmlDocument(
     throw XmlParserException(result.message,
         buffer: result.buffer, position: result.position, line: lineAndColumn[0], column: lineAndColumn[1]);
   } else {
-    return result.value as XmlDocument;
+    return result.value as XmlDocumentNaturalImpl;
   }
 }
 
 /// Internal cache of parsers for a specific entity mapping.
 final XmlCache<XmlEntityMapping, Parser> _documentParserCache =
-    XmlCache((entityMapping) => XmlParserDefinition(entityMapping).build<dynamic >(), 5);
+    XmlCache((entityMapping) => XmlParserDefinition(entityMapping).build<dynamic>(), 5);
 
 /// Return an [XmlDocumentFragment] for the given [input] string, or throws an
 /// [XmlParserException] if the input is invalid.
@@ -78,5 +80,17 @@ XmlName createXmlNameFromString(String qualified) {
     return XmlPrefixNameSyntheticImpl(prefix, local, qualified);
   } else {
     return XmlSimpleNameSyntheticImpl(qualified);
+  }
+}
+
+/// Create a [XmlName] by parsing the provided `qualified` name.
+XmlNameNatural createXmlNameNaturalFromString(XmlSourceRange range, String qualified) {
+  final index = qualified.indexOf(XmlToken.namespace);
+  if (index > 0) {
+    final prefix = qualified.substring(0, index);
+    final local = qualified.substring(index + 1);
+    return XmlPrefixNameNaturalImpl(range, prefix, local, qualified);
+  } else {
+    return XmlSimpleNameNaturalImpl(range, qualified);
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import '../nodes/interface.dart';
+import '../nodes/synthetic_interface.dart';
 import '../utils/name_matcher.dart';
 
 /// Iterable to walk over the ancestors of a node.

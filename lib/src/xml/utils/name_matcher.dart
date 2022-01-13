@@ -1,4 +1,4 @@
-import '../nodes/interface.dart';
+import '../nodes/synthetic_interface.dart';
 
 /// Internal function type to match named elements.
 typedef XmlNameMatcher = bool Function(XmlHasName named);

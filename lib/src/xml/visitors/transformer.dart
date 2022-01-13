@@ -1,6 +1,6 @@
-import '../nodes/interface.dart';
 import '../nodes/parse.dart';
 import '../nodes/synthetic_impl.dart';
+import '../nodes/synthetic_interface.dart';
 
 /// Transformer that creates an identical copy of the visited nodes.
 ///

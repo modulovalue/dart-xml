@@ -1,6 +1,6 @@
-import 'interface.dart';
 import 'mixin.dart';
 import 'node_mixin.dart';
+import 'synthetic_interface.dart';
 
 // TODO use mixins once https://github.com/dart-lang/language/issues/540 is fixed.
 

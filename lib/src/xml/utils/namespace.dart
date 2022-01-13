@@ -1,4 +1,4 @@
-import '../nodes/interface.dart';
+import '../nodes/synthetic_interface.dart';
 
 // XML namespace declarations.
 const String xml = 'xml';

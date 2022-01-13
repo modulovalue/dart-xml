@@ -1,4 +1,4 @@
-import '../nodes/interface.dart';
+import '../nodes/synthetic_interface.dart';
 
 class XmlVisitorNodeType implements XmlVisitor<XmlNodeType?> {
   const XmlVisitorNodeType();

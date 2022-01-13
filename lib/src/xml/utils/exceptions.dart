@@ -1,4 +1,4 @@
-import '../nodes/interface.dart';
+import '../nodes/synthetic_interface.dart';
 import '../visitors/node_type.dart';
 
 /// Abstract exception class.

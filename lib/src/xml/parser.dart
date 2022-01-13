@@ -1,88 +1,183 @@
 import 'package:petitparser/petitparser.dart';
 
 import 'entities/entity_mapping.dart';
-import 'nodes/interface.dart';
+import 'nodes/natural_impl.dart';
+import 'nodes/natural_interface.dart';
 import 'nodes/parse.dart';
-import 'nodes/synthetic_impl.dart';
+import 'nodes/synthetic_interface.dart';
 import 'utils/attribute_type.dart';
 import 'utils/character_data_parser.dart';
 import 'utils/exceptions.dart';
 import 'utils/token.dart';
 
 /// XML parser that defines standard actions to the the XML tree.
-class XmlParserDefinition extends XmlGrammarDefinition<XmlNode, XmlName> {
-  XmlParserDefinition(XmlEntityMapping entityMapping) : super(entityMapping);
+class XmlParserDefinition extends XmlGrammarDefinition {
+  XmlParserDefinition(XmlEntityMapping entityMapping)
+      : super(
+          entityMapping,
+        );
 
   @override
-  XmlAttribute createAttribute(XmlName name, String text, XmlAttributeType type) =>
-      XmlAttributeSyntheticImpl(name, text, type);
+  XmlAttributeNaturalImpl createAttribute(
+    XmlSourceRange source,
+    XmlName name,
+    String text,
+    XmlAttributeType type,
+  ) =>
+      XmlAttributeNaturalImpl(
+        source,
+        name,
+        text,
+        type,
+      );
 
   @override
-  XmlComment createComment(String text) => XmlCommentSyntheticImpl(text);
+  XmlCommentNaturalImpl createComment(
+    XmlSourceRange source,
+    String text,
+  ) =>
+      XmlCommentNaturalImpl(
+        source,
+        text,
+      );
 
   @override
-  XmlCDATA createCDATA(String text) => XmlCDATASyntheticImpl(text);
+  XmlCDATANaturalImpl createCDATA(
+    XmlSourceRange source,
+    String text,
+  ) =>
+      XmlCDATANaturalImpl(
+        source,
+        text,
+      );
 
   @override
-  XmlDeclaration createDeclaration(Iterable<XmlNode> attributes) =>
-      XmlDeclarationSyntheticImpl(attributes.cast<XmlAttribute>());
+  XmlDeclarationNaturalImpl createDeclaration(
+    XmlSourceRange source,
+    Iterable<XmlNode> attributes,
+  ) =>
+      XmlDeclarationNaturalImpl(
+        source,
+        attributes.cast<XmlAttribute>(),
+      );
 
   @override
-  XmlDoctype createDoctype(String text) => XmlDoctypeSyntheticImpl(text);
+  XmlDoctypeNaturalImpl createDoctype(
+    XmlSourceRange source,
+    String text,
+  ) =>
+      XmlDoctypeNaturalImpl(
+        source,
+        text,
+      );
 
   @override
-  XmlDocument createDocument(Iterable<XmlNode> children) => XmlDocumentSyntheticImpl(children);
+  XmlDocumentNaturalImpl createDocument(
+    XmlSourceRange source,
+    Iterable<XmlNode> children,
+  ) =>
+      XmlDocumentNaturalImpl(
+        source,
+        children,
+      );
 
   @override
-  XmlNode createDocumentFragment(Iterable<XmlNode> children) => XmlDocumentFragmentSyntheticImpl(children);
+  XmlDocumentFragmentNaturalImpl createDocumentFragment(
+    XmlSourceRange source,
+    Iterable<XmlNode> children,
+  ) =>
+      XmlDocumentFragmentNaturalImpl(
+        source,
+        children,
+      );
 
   @override
-  XmlElement createElement(XmlName name, Iterable<XmlNode> attributes, Iterable<XmlNode> children,
-          [bool isSelfClosing = true]) =>
-      XmlElementSyntheticImpl(name, attributes.cast<XmlAttribute>(), children, isSelfClosing);
+  XmlElementNaturalImpl createElement(
+    XmlSourceRange source,
+    XmlName name,
+    Iterable<XmlNode> attributes,
+    Iterable<XmlNode> children, [
+    bool isSelfClosing = true,
+  ]) =>
+      XmlElementNaturalImpl(
+        source,
+        name,
+        attributes.cast<XmlAttribute>(),
+        children,
+        isSelfClosing,
+      );
 
   @override
-  XmlProcessing createProcessing(String target, String text) => XmlProcessingSyntheticImpl(target, text);
+  XmlProcessingNaturalImpl createProcessing(
+    XmlSourceRange source,
+    String target,
+    String text,
+  ) =>
+      XmlProcessingNaturalImpl(
+        source,
+        target,
+        text,
+      );
 
   @override
-  XmlName createQualified(String name) => createXmlNameFromString(name);
+  XmlNameNatural createQualified(
+    XmlSourceRange source,
+    String name,
+  ) =>
+      createXmlNameNaturalFromString(
+        source,
+        name,
+      );
 
   @override
-  XmlText createText(String text) => XmlTextSyntheticImpl(text);
+  XmlTextNaturalImpl createText(
+    XmlSourceRange source,
+    String text,
+  ) =>
+      XmlTextNaturalImpl(
+        source,
+        text,
+      );
 }
 
-/// XML grammar definition with [TNode] and [TName].
-abstract class XmlGrammarDefinition<TNode, TName> extends XmlProductionDefinition {
+/// XML grammar definition.
+abstract class XmlGrammarDefinition extends XmlProductionDefinition {
   XmlGrammarDefinition(XmlEntityMapping entityMapping) : super(entityMapping);
 
   // Callbacks used to build the XML AST.
-  TNode createAttribute(TName name, String text, XmlAttributeType type);
+  XmlNode createAttribute(XmlSourceRange source, XmlName name, String text, XmlAttributeType type);
 
-  TNode createComment(String text);
+  XmlNode createComment(XmlSourceRange source, String text);
 
-  TNode createCDATA(String text);
+  XmlNode createCDATA(XmlSourceRange source, String text);
 
-  TNode createDeclaration(Iterable<TNode> attributes);
+  XmlNode createDeclaration(XmlSourceRange source, Iterable<XmlNode> attributes);
 
-  TNode createDoctype(String text);
+  XmlNode createDoctype(XmlSourceRange source, String text);
 
-  TNode createDocument(Iterable<TNode> children);
+  XmlNode createDocument(XmlSourceRange source, Iterable<XmlNode> children);
 
-  TNode createDocumentFragment(Iterable<TNode> children);
+  XmlNode createDocumentFragment(XmlSourceRange source, Iterable<XmlNode> children);
 
-  TNode createElement(TName name, Iterable<TNode> attributes, Iterable<TNode> children, bool isSelfClosing);
+  XmlNode createElement(XmlSourceRange source, XmlName name, Iterable<XmlNode> attributes,
+      Iterable<XmlNode> children, bool isSelfClosing);
 
-  TNode createProcessing(String target, String text);
+  XmlNode createProcessing(XmlSourceRange source, String target, String text);
 
-  TName createQualified(String name);
+  XmlName createQualified(XmlSourceRange source, String name);
 
-  TNode createText(String text);
+  XmlNode createText(XmlSourceRange source, String text);
 
   // Connects the productions and the XML AST callbacks.
 
   @override
-  Parser attribute() => super.attribute().map<dynamic>((dynamic each) =>
-      createAttribute(each[0] as TName, each[4][0] as String, each[4][1] as XmlAttributeType));
+  Parser attribute() => super.attribute().token().map<dynamic>((a) {
+        final dynamic each = a.value;
+        return createAttribute(
+            _range(a), each[0] as XmlName, each[4][0] as String, each[4][1] as XmlAttributeType);
+      });
+
+  XmlSourceRange _range(Token<dynamic> t) => XmlSourceRangeImpl(t.start, t.stop);
 
   @override
   Parser attributeValueDouble() => super
@@ -95,21 +190,33 @@ abstract class XmlGrammarDefinition<TNode, TName> extends XmlProductionDefinitio
       .map<dynamic>((dynamic each) => <dynamic>[each[1], XmlAttributeType.SINGLE_QUOTE]);
 
   @override
-  Parser comment() => super.comment().map<dynamic>((dynamic each) => createComment(each[1] as String));
+  Parser comment() => super.comment().token().map<dynamic>((a) {
+        final dynamic each = a.value;
+        return createComment(_range(a), each[1] as String);
+      });
 
   @override
-  Parser declaration() => super
-      .declaration()
-      .map<dynamic>((dynamic each) => createDeclaration((each[1] as Iterable<dynamic>).cast<TNode>()));
+  Parser declaration() => super.declaration().token().map<dynamic>((a) {
+        final dynamic each = a.value;
+        return createDeclaration(_range(a), (each[1] as Iterable<dynamic>).cast<XmlNode>());
+      });
 
   @override
-  Parser cdata() => super.cdata().map<dynamic>((dynamic each) => createCDATA(each[1] as String));
+  Parser cdata() => super.cdata().token().map<dynamic>((a) {
+        final dynamic each = a.value;
+        final source = _range(a);
+        return createCDATA(source, each[1] as String);
+      });
 
   @override
-  Parser doctype() => super.doctype().map<dynamic>((dynamic each) => createDoctype(each[2] as String));
+  Parser doctype() => super.doctype().token().map<dynamic>((a) {
+        final dynamic each = a.value;
+        return createDoctype(_range(a), each[2] as String);
+      });
 
   @override
-  Parser document() => super.document().map<dynamic>((dynamic each) {
+  Parser document() => super.document().token().map<dynamic>((a) {
+        final dynamic each = a.value;
         final nodes = <dynamic>[];
         if (each[0] != null) {
           nodes.add(each[0]); // declaration
@@ -121,26 +228,31 @@ abstract class XmlGrammarDefinition<TNode, TName> extends XmlProductionDefinitio
         nodes.addAll(each[3] as List<dynamic>);
         nodes.add(each[4]); // document
         nodes.addAll(each[5] as List<dynamic>);
-        return createDocument(nodes.cast<TNode>());
+        return createDocument(
+          _range(a),
+          nodes.cast<XmlNode>(),
+        );
       });
 
   @override
-  Parser documentFragment() => super
-      .documentFragment()
-      .map<dynamic>((dynamic nodes) => createDocumentFragment((nodes as List<dynamic>).cast<TNode>()));
+  Parser documentFragment() => super.documentFragment().token().map<dynamic>((a) {
+        final dynamic nodes = a.value;
+        return createDocumentFragment(_range(a), (nodes as List<dynamic>).cast<XmlNode>());
+      });
 
   @override
-  Parser element() => super.element().map<dynamic>((dynamic list) {
-        final TName name = list[1] as TName;
-        final attributes = (list[2] as List<dynamic>).cast<TNode>();
+  Parser element() => super.element().token().map<dynamic>((a) {
+        final dynamic list = a.value;
+        final name = list[1] as XmlName;
+        final attributes = (list[2] as List<dynamic>).cast<XmlNode>();
         if (list[4] == XmlToken.closeEndElement) {
-          return createElement(name, attributes, [], true);
+          return createElement(_range(a), name, attributes, [], true);
         } else {
           if (list[1] == list[4][3]) {
-            final children = (list[4][1] as List<dynamic>).cast<TNode>();
-            return createElement(name, attributes, children, children.isNotEmpty);
+            final children = (list[4][1] as List<dynamic>).cast<XmlNode>();
+            return createElement(_range(a), name, attributes, children, children.isNotEmpty);
           } else {
-            final Token<dynamic> token = list[4][2] as Token;
+            final token = list[4][2] as Token<dynamic>;
             final lineAndColumn = Token.lineAndColumnOf(token.buffer, token.start);
             throw XmlParserException('Expected </${list[1]}>, but found </${list[4][3]}>',
                 buffer: token.buffer,
@@ -152,18 +264,28 @@ abstract class XmlGrammarDefinition<TNode, TName> extends XmlProductionDefinitio
       });
 
   @override
-  Parser processing() => super
-      .processing()
-      .map<dynamic>((dynamic each) => createProcessing(each[1] as String, each[2] as String));
+  Parser processing() => super.processing().token().map<dynamic>((a) {
+        final dynamic each = a.value;
+        return createProcessing(_range(a), each[1] as String, each[2] as String);
+      });
 
   @override
-  Parser qualified() => super.qualified().cast<String>().map<dynamic>(createQualified);
+  Parser qualified() => super.qualified().cast<String>().token().map<dynamic>((final a) {
+        final each = a.value;
+        return createQualified(_range(a), each);
+      });
 
   @override
-  Parser characterData() => super.characterData().cast<String>().map<dynamic>(createText);
+  Parser characterData() => super.characterData().cast<String>().token().map<dynamic>((final a) {
+        final each = a.value;
+        return createText(_range(a), each);
+      });
 
   @override
-  Parser spaceText() => super.spaceText().cast<String>().map<dynamic>(createText);
+  Parser spaceText() => super.spaceText().cast<String>().token().map<dynamic>((final a) {
+        final each = a.value;
+        return createText(_range(a), each);
+      });
 }
 
 /// XML parser that defines standard actions to the the XML tree.

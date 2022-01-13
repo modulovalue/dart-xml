@@ -1,6 +1,6 @@
 import '../entities/default_mapping.dart';
 import '../entities/entity_mapping.dart';
-import '../nodes/interface.dart';
+import '../nodes/synthetic_interface.dart';
 import '../utils/token.dart';
 
 /// A visitor that writes XML nodes exactly as they were parsed.

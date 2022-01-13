@@ -1,7 +1,6 @@
 import 'package:meta/meta.dart';
 
 import '../../../xml.dart';
-import '../utils/node_list.dart';
 import '../utils/predicate.dart';
 
 /// Immutable abstract XML node.
@@ -22,7 +21,7 @@ abstract class XmlNode implements XmlParentable, XmlAttributes, XmlNodeNavigatea
   set innerXml(String value);
 
   /// Return the direct children of this node in document order.
-  XmlNodeList<XmlNode> get children;
+  List<XmlNode> get children;
 
   /// Return an [Iterable] over the [XmlElement] children of this node.
   Iterable<XmlElement> get childElements;

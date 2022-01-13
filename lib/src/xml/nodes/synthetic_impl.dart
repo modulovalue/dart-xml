@@ -2,9 +2,7 @@ import '../../../xml.dart';
 import '../visitors/node_type.dart';
 import 'base.dart';
 
-/// XML document fragment node.
 class XmlDocumentFragmentSyntheticImpl extends XmlDocumentFragmentBase {
-  /// Create a document fragment node with `children`.
   XmlDocumentFragmentSyntheticImpl([
     Iterable<XmlNode> childrenIterable = const [],
   ]) {
@@ -25,9 +23,7 @@ class XmlDocumentFragmentSyntheticImpl extends XmlDocumentFragmentBase {
       XmlDocumentFragmentSyntheticImpl(children.map((each) => each.copy()));
 }
 
-/// XML document node.
 class XmlDocumentSyntheticImpl extends XmlDocumentBase {
-  /// Create a document node with `children`.
   XmlDocumentSyntheticImpl([
     Iterable<XmlNode> childrenIterable = const [],
   ]) {
@@ -47,9 +43,7 @@ class XmlDocumentSyntheticImpl extends XmlDocumentBase {
   XmlDocument copy() => XmlDocumentSyntheticImpl(children.map((each) => each.copy()));
 }
 
-/// XML CDATA node.
 class XmlCDATASyntheticImpl extends XmlCDDATABase {
-  /// Create a CDATA section with `text`.
   XmlCDATASyntheticImpl(this.text);
 
   @override
@@ -59,9 +53,7 @@ class XmlCDATASyntheticImpl extends XmlCDDATABase {
   XmlCDATA copy() => XmlCDATASyntheticImpl(text);
 }
 
-/// XML attribute node.
 class XmlAttributeSyntheticImpl extends XmlAttributeBase {
-  /// Create an attribute with `name` and `value`.
   XmlAttributeSyntheticImpl(
     this.name,
     this.value, [
@@ -83,9 +75,7 @@ class XmlAttributeSyntheticImpl extends XmlAttributeBase {
   XmlAttribute copy() => XmlAttributeSyntheticImpl(name.copy(), value, attributeType);
 }
 
-/// XML comment node.
 class XmlCommentSyntheticImpl extends XmlCommentBase {
-  /// Create a comment section with `text`.
   XmlCommentSyntheticImpl(this.text);
 
   @override
@@ -95,7 +85,6 @@ class XmlCommentSyntheticImpl extends XmlCommentBase {
   XmlCommentSyntheticImpl copy() => XmlCommentSyntheticImpl(text);
 }
 
-/// XML document declaration.
 class XmlDeclarationSyntheticImpl extends XmlDeclarationBase {
   XmlDeclarationSyntheticImpl([
     Iterable<XmlAttribute> attributesIterable = const [],
@@ -110,9 +99,7 @@ class XmlDeclarationSyntheticImpl extends XmlDeclarationBase {
   XmlDeclaration copy() => XmlDeclarationSyntheticImpl(attributes.map((each) => each.copy()));
 }
 
-/// XML doctype node.
 class XmlDoctypeSyntheticImpl extends XmlDoctypeBase {
-  /// Create a doctype section with `text`.
   XmlDoctypeSyntheticImpl(
     this.text,
   );
@@ -124,10 +111,7 @@ class XmlDoctypeSyntheticImpl extends XmlDoctypeBase {
   XmlDoctype copy() => XmlDoctypeSyntheticImpl(text);
 }
 
-/// XML element node.
 class XmlElementSyntheticImpl extends XmlElementBase {
-  /// Create an element node with the provided [name], [attributes], and
-  /// [children].
   XmlElementSyntheticImpl(
     this.name, [
     Iterable<XmlAttribute> attributesIterable = const [],
@@ -160,9 +144,7 @@ class XmlElementSyntheticImpl extends XmlElementBase {
       name.copy(), attributes.map((each) => each.copy()), children.map((each) => each.copy()), isSelfClosing);
 }
 
-/// XML processing instruction.
 class XmlProcessingSyntheticImpl extends XmlProcessingBase {
-  /// Create a processing node with `target` and `text`.
   XmlProcessingSyntheticImpl(
     this.target,
     this.text,
@@ -178,9 +160,7 @@ class XmlProcessingSyntheticImpl extends XmlProcessingBase {
   XmlProcessing copy() => XmlProcessingSyntheticImpl(target, text);
 }
 
-/// XML text node.
 class XmlTextSyntheticImpl extends XmlTextBase {
-  /// Create a text node with `text`.
   XmlTextSyntheticImpl(
     this.text,
   );
@@ -192,7 +172,6 @@ class XmlTextSyntheticImpl extends XmlTextBase {
   XmlText copy() => XmlTextSyntheticImpl(text);
 }
 
-/// An XML entity name with a prefix.
 class XmlPrefixNameSyntheticImpl extends XmlPrefixNameBase {
   XmlPrefixNameSyntheticImpl(
     this.prefix,
@@ -213,7 +192,6 @@ class XmlPrefixNameSyntheticImpl extends XmlPrefixNameBase {
   XmlPrefixName copy() => XmlPrefixNameSyntheticImpl(prefix, local, qualified);
 }
 
-/// An XML entity name without a prefix.
 class XmlSimpleNameSyntheticImpl extends XmlSimpleNameBase {
   XmlSimpleNameSyntheticImpl(
     this.local,

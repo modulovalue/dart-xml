@@ -1,9 +1,9 @@
 import 'dart:collection';
 
 import 'entities/entity_mapping.dart';
-import 'nodes/interface.dart';
 import 'nodes/parse.dart';
 import 'nodes/synthetic_impl.dart';
+import 'nodes/synthetic_interface.dart';
 import 'utils/attribute_type.dart';
 import 'utils/exceptions.dart';
 import 'utils/namespace.dart' as ns;

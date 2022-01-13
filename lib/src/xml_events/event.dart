@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 import '../../xml_events.dart';
-import '../xml/nodes/interface.dart';
+import '../xml/nodes/synthetic_interface.dart';
 import '../xml/utils/namespace.dart';
 import '../xml/utils/token.dart';
 import '../xml/visitors/node_type.dart';

@@ -1,8 +1,8 @@
 import 'package:meta/meta.dart';
 
 import '../entities/entity_mapping.dart';
-import '../nodes/interface.dart';
 import '../nodes/synthetic_impl.dart';
+import '../nodes/synthetic_interface.dart';
 import '../utils/predicate.dart';
 import '../utils/token.dart';
 import 'writer.dart';

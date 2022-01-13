@@ -1,6 +1,6 @@
 import 'dart:convert' show Codec, Converter;
 
-import '../../xml/nodes/interface.dart';
+import '../../xml/nodes/synthetic_interface.dart';
 import '../converters/node_decoder.dart';
 import '../converters/node_encoder.dart';
 import '../event.dart';
