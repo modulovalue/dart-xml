@@ -33,7 +33,7 @@ XmlDocument parseXmlDocument(
 
 /// Internal cache of parsers for a specific entity mapping.
 final XmlCache<XmlEntityMapping, Parser> _documentParserCache =
-    XmlCache((entityMapping) => XmlParserDefinition(entityMapping).build<dynamic>(), 5);
+    XmlCache((entityMapping) => XmlTreeGrammarDefinition(entityMapping).build<dynamic>(), 5);
 
 /// Return an [XmlDocumentFragment] for the given [input] string, or throws an
 /// [XmlParserException] if the input is invalid.
@@ -57,7 +57,7 @@ XmlDocumentFragment parseXmlDocumentFragment(
 
 /// Internal cache of parsers for a specific entity mapping.
 final XmlCache<XmlEntityMapping, Parser> _documentFragmentParserCache = XmlCache((entityMapping) {
-  final definition = XmlParserDefinition(entityMapping);
+  final definition = XmlTreeGrammarDefinition(entityMapping);
   return definition.build<dynamic>(start: definition.documentFragment).end();
 }, 5);
 

@@ -28,6 +28,7 @@ double _benchmark(Function function, Duration duration) {
   var elapsed = 0;
   watch.start();
   while (elapsed < micros) {
+    // ignore: avoid_dynamic_calls
     function();
     elapsed = watch.elapsedMicroseconds;
     count++;

@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:args/args.dart' as args;
 import 'package:petitparser/petitparser.dart';
+import 'package:xml/src/xml/nodes/natural_impl.dart';
 import 'package:xml/xml.dart';
 
 final args.ArgParser argumentParser = args.ArgParser()
@@ -94,29 +95,29 @@ String outputString(int limit, Token<dynamic> token) {
 
 final Map<XmlNode, Token<dynamic>> tokens = {};
 
-final Parser parser = PositionParserDefinition(defaultEntityMapping).build<dynamic>();
+final Parser parser = XmlTreeGrammarDefinitionRegisterPosition(defaultEntityMapping).build<dynamic>();
 
-class PositionParserDefinition extends XmlParserDefinition {
-  PositionParserDefinition(XmlEntityMapping entityMapping)
+class XmlTreeGrammarDefinitionRegisterPosition extends XmlTreeGrammarDefinition {
+  XmlTreeGrammarDefinitionRegisterPosition(XmlEntityMapping entityMapping)
       : super(entityMapping);
 
   @override
-  Parser<XmlComment> comment() => collectPosition(super.comment().cast());
+  Parser<XmlCommentNaturalImpl> comment() => collectPosition(super.comment().cast());
 
   @override
-  Parser<XmlCDATA> cdata() => collectPosition(super.cdata().cast());
+  Parser<XmlCDATANaturalImpl> cdata() => collectPosition(super.cdata().cast());
 
   @override
-  Parser<XmlDoctype> doctype() => collectPosition(super.doctype().cast());
+  Parser<XmlDoctypeNaturalImpl> doctype() => collectPosition(super.doctype().cast());
 
   @override
-  Parser<XmlDocument> document() => collectPosition(super.document().cast());
+  Parser<XmlDocumentNaturalImpl> document() => collectPosition(super.document().cast());
 
   @override
-  Parser<XmlElement> element() => collectPosition(super.element().cast());
+  Parser<XmlElementNaturalImpl> element() => collectPosition(super.element().cast());
 
   @override
-  Parser<XmlProcessing> processing() => collectPosition(super.processing().cast());
+  Parser<XmlProcessingNaturalImpl> processing() => collectPosition(super.processing().cast());
 
   Parser<T> collectPosition<T extends XmlNode>(Parser<T> parser) => parser.token().map((token) {
         tokens[token.value] = token;
