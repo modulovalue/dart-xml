@@ -1,4 +1,4 @@
-import '../mixins/has_name.dart';
+import '../nodes/interface.dart';
 
 /// Internal function type to match named elements.
 typedef XmlNameMatcher = bool Function(XmlHasName named);
@@ -17,8 +17,7 @@ XmlNameMatcher createNameMatcher(String name, String? namespace) {
     } else if (namespace == '*') {
       return (named) => named.name.local == name;
     } else {
-      return (named) =>
-          named.name.local == name && named.name.namespaceUri == namespace;
+      return (named) => named.name.local == name && named.name.namespaceUri == namespace;
     }
   }
 }

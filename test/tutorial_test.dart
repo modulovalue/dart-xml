@@ -1,4 +1,6 @@
 import 'package:test/test.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
+import 'package:xml/src/xml_events/event.dart';
 import 'package:xml/xml.dart';
 import 'package:xml/xml_events.dart';
 
@@ -17,7 +19,7 @@ void main() {
       </book>
       <price>132.00</price>
     </bookshelf>''';
-  final document = XmlDocument.parse(bookshelfXml);
+  final document = parseXmlDocument(bookshelfXml);
   group('reading and writing', () {
     test('parse document', () {
       assertDocumentInvariants(document);

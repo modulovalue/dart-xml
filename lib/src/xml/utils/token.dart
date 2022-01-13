@@ -1,5 +1,5 @@
 /// Shared tokens for XML reading and writing.
-class XmlToken {
+abstract class XmlToken {
   static const String doubleQuote = '"';
   static const String singleQuote = "'";
   static const String equals = '=';

@@ -2,6 +2,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart' as args;
+import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/xml.dart';
 
 const entityMapping = XmlDefaultEntityMapping.xml();
@@ -92,7 +93,7 @@ void main(List<String> arguments) {
           ? XmlColoredWriter(stdout, entityMapping: entityMapping)
           : XmlWriter(stdout, entityMapping: entityMapping));
   for (final file in files) {
-    visitor.visit(XmlDocument.parse(file.readAsStringSync()));
+    parseXmlDocument(file.readAsStringSync()).accept(visitor);
   }
 }
 

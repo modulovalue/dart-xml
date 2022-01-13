@@ -1,4 +1,5 @@
 import 'package:test/test.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/xml.dart';
 
 import 'assertions.dart';
@@ -108,7 +109,7 @@ void main() {
   });
   test('nested node (element)', () {
     final builder = XmlBuilder();
-    final nested = XmlElement(XmlName('nested'));
+    final nested = XmlElementSyntheticImpl(createXmlName('nested'));
     builder.element('element', nest: nested);
     final xml = builder.buildDocument();
     assertDocumentTreeInvariants(xml);
@@ -120,7 +121,7 @@ void main() {
   });
   test('nested node (element, repeated)', () {
     final builder = XmlBuilder();
-    final nested = XmlElement(XmlName('nested'));
+    final nested = XmlElementSyntheticImpl(createXmlName('nested'));
     builder.element('element', nest: [nested, nested]);
     final xml = builder.buildDocument();
     assertDocumentTreeInvariants(xml);
@@ -134,7 +135,7 @@ void main() {
   });
   test('nested node (text)', () {
     final builder = XmlBuilder();
-    final nested = XmlText('text');
+    final nested = XmlTextSyntheticImpl('text');
     builder.element('element', nest: nested);
     final xml = builder.buildDocument();
     assertDocumentTreeInvariants(xml);
@@ -146,7 +147,7 @@ void main() {
   });
   test('nested node (text, repeated)', () {
     final builder = XmlBuilder();
-    final nested = XmlText('text');
+    final nested = XmlTextSyntheticImpl('text');
     builder.element('element', nest: [nested, nested]);
     final xml = builder.buildDocument();
     assertDocumentTreeInvariants(xml);
@@ -158,7 +159,7 @@ void main() {
   });
   test('nested node (data)', () {
     final builder = XmlBuilder();
-    final nested = XmlComment('abc');
+    final nested = XmlCommentSyntheticImpl('abc');
     builder.element('element', nest: nested);
     final xml = builder.buildDocument();
     assertDocumentTreeInvariants(xml);
@@ -170,7 +171,7 @@ void main() {
   });
   test('nested node (attribute)', () {
     final builder = XmlBuilder();
-    final nested = XmlAttribute(XmlName('foo'), 'bar');
+    final nested = XmlAttributeSyntheticImpl(createXmlName('foo'), 'bar');
     builder.element('element', nest: nested);
     final xml = builder.buildDocument();
     assertDocumentTreeInvariants(xml);
@@ -182,12 +183,12 @@ void main() {
   });
   test('nested node (document)', () {
     final builder = XmlBuilder();
-    final nested = XmlDocument([]);
+    final nested = XmlDocumentSyntheticImpl([]);
     expect(() => builder.element('element', nest: nested), throwsArgumentError);
   });
   test('nested node (document fragment)', () {
     final builder = XmlBuilder();
-    final nested = XmlDocumentFragment([XmlText('foo'), XmlComment('bar')]);
+    final nested = XmlDocumentFragmentSyntheticImpl([XmlTextSyntheticImpl('foo'), XmlCommentSyntheticImpl('bar')]);
     builder.element('element', nest: nested);
     final xml = builder.buildDocument();
     assertDocumentTreeInvariants(xml);

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/xml.dart';
 import 'package:xml/xml_events.dart';
 
@@ -83,8 +84,8 @@ void addBenchmarks(XmlBuilder builder) {
 void addBenchmark(XmlBuilder builder, MapEntry<String, String> entry) {
   builder.element('benchmark', attributes: {'name': entry.key}, nest: () {
     final source = entry.value;
-    final document = XmlDocument.parse(source);
-    final parser = benchmark(() => XmlDocument.parse(source));
+    final document = parseXmlDocument(source);
+    final parser = benchmark(() => parseXmlDocument(source));
     final stream = benchmark(() => XmlEventDecoder().convert(source));
     final iterator = benchmark(() => parseEvents(source).toList());
     final serialize = benchmark(() => document.toXmlString());

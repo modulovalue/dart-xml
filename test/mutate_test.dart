@@ -1,4 +1,5 @@
 import 'package:test/test.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/xml.dart';
 
 import 'assertions.dart';
@@ -6,7 +7,7 @@ import 'assertions.dart';
 void mutatingTest(String description, String before,
     void Function(XmlElement node) action, String after) {
   test(description, () {
-    final document = XmlDocument.parse(before);
+    final document = parseXmlDocument(before);
     action(document.rootElement);
     document.normalize();
     expect(document.toXmlString(), after, reason: 'should have been modified');
@@ -17,7 +18,7 @@ void mutatingTest(String description, String before,
 void throwingTest(String description, String before,
     void Function(XmlElement node) action, Matcher matcher) {
   test(description, () {
-    final document = XmlDocument.parse(before);
+    final document = parseXmlDocument(before);
     expect(() => action(document.rootElement), matcher);
     expect(document.toXmlString(), before,
         reason: 'should not have been modified');
@@ -64,7 +65,7 @@ void main() {
       '<element/>',
     );
     test('processing (text)', () {
-      final document = XmlDocument.parse('<?xml processing?><element/>');
+      final document = parseXmlDocument('<?xml processing?><element/>');
       final processing = document.firstChild! as XmlProcessing;
       processing.text = 'update';
       expect(document.toXmlString(), '<?xml update?><element/>');
@@ -83,13 +84,13 @@ void main() {
     mutatingTest(
       'element (attributes)',
       '<element/>',
-      (node) => node.attributes.add(XmlAttribute(XmlName('attr'), 'value')),
+      (node) => node.attributes.add(XmlAttributeSyntheticImpl(createXmlName('attr'), 'value')),
       '<element attr="value"/>',
     );
     mutatingTest(
       'element (children)',
       '<element/>',
-      (node) => node.children.add(XmlText('Hello World')),
+      (node) => node.children.add(XmlTextSyntheticImpl('Hello World')),
       '<element>Hello World</element>',
     );
     mutatingTest(
@@ -109,10 +110,10 @@ void main() {
       'element (fragment children)',
       '<element1/>',
       (node) {
-        final fragment = XmlDocumentFragment([
-          XmlText('Hello'),
-          XmlElement(XmlName('element2')),
-          XmlComment('comment'),
+        final fragment = XmlDocumentFragmentSyntheticImpl([
+          XmlTextSyntheticImpl('Hello'),
+          XmlElementSyntheticImpl(createXmlName('element2')),
+          XmlCommentSyntheticImpl('comment'),
         ]);
         node.children.add(fragment);
       },
@@ -122,7 +123,7 @@ void main() {
       'element (repeated fragment children)',
       '<element1/>',
       (node) {
-        final fragment = XmlDocumentFragment([XmlElement(XmlName('element2'))]);
+        final fragment = XmlDocumentFragmentSyntheticImpl([XmlElementSyntheticImpl(createXmlName('element2'))]);
         node.children
           ..add(fragment)
           ..add(fragment);
@@ -133,7 +134,7 @@ void main() {
       'element (attribute children)',
       '<element/>',
       (node) {
-        final wrong = XmlAttribute(XmlName('invalid'), 'invalid');
+        final wrong = XmlAttributeSyntheticImpl(createXmlName('invalid'), 'invalid');
         node.children.add(wrong);
       },
       throwsA(isXmlNodeTypeException),
@@ -150,13 +151,13 @@ void main() {
       'element (attributes)',
       '<element/>',
       (node) =>
-          node.attributes.addAll([XmlAttribute(XmlName('attr'), 'value')]),
+          node.attributes.addAll([XmlAttributeSyntheticImpl(createXmlName('attr'), 'value')]),
       '<element attr="value"/>',
     );
     mutatingTest(
       'element (children)',
       '<element/>',
-      (node) => node.children.addAll([XmlText('Hello World')]),
+      (node) => node.children.addAll([XmlTextSyntheticImpl('Hello World')]),
       '<element>Hello World</element>',
     );
     mutatingTest(
@@ -176,10 +177,10 @@ void main() {
       'element (fragment children)',
       '<element1/>',
       (node) {
-        final fragment = XmlDocumentFragment([
-          XmlText('Hello'),
-          XmlElement(XmlName('element2')),
-          XmlComment('comment'),
+        final fragment = XmlDocumentFragmentSyntheticImpl([
+          XmlTextSyntheticImpl('Hello'),
+          XmlElementSyntheticImpl(createXmlName('element2')),
+          XmlCommentSyntheticImpl('comment'),
         ]);
         node.children.addAll([fragment]);
       },
@@ -189,7 +190,7 @@ void main() {
       'element (repeated fragment children)',
       '<element1/>',
       (node) {
-        final fragment = XmlDocumentFragment([XmlElement(XmlName('element2'))]);
+        final fragment = XmlDocumentFragmentSyntheticImpl([XmlElementSyntheticImpl(createXmlName('element2'))]);
         node.children.addAll([fragment, fragment]);
       },
       '<element1><element2/><element2/></element1>',
@@ -198,7 +199,7 @@ void main() {
       'element (attribute children)',
       '<element/>',
       (node) {
-        final wrong = XmlAttribute(XmlName('invalid'), 'invalid');
+        final wrong = XmlAttributeSyntheticImpl(createXmlName('invalid'), 'invalid');
         node.children.addAll([wrong]);
       },
       throwsA(isXmlNodeTypeException),
@@ -313,13 +314,13 @@ void main() {
       'element (attributes)',
       '<element attr1="value1"/>',
       (node) =>
-          node.attributes.insert(1, XmlAttribute(XmlName('attr2'), 'value2')),
+          node.attributes.insert(1, XmlAttributeSyntheticImpl(createXmlName('attr2'), 'value2')),
       '<element attr1="value1" attr2="value2"/>',
     );
     mutatingTest(
       'element (children)',
       '<element>Hello</element>',
-      (node) => node.children.insert(1, XmlText(' World')),
+      (node) => node.children.insert(1, XmlTextSyntheticImpl(' World')),
       '<element>Hello World</element>',
     );
     mutatingTest(
@@ -339,10 +340,10 @@ void main() {
       'element (fragment children)',
       '<element1><element2/></element1>',
       (node) {
-        final fragment = XmlDocumentFragment([
-          XmlText('Hello'),
-          XmlElement(XmlName('element3')),
-          XmlComment('comment'),
+        final fragment = XmlDocumentFragmentSyntheticImpl([
+          XmlTextSyntheticImpl('Hello'),
+          XmlElementSyntheticImpl(createXmlName('element3')),
+          XmlCommentSyntheticImpl('comment'),
         ]);
         node.children.insert(1, fragment);
       },
@@ -352,7 +353,7 @@ void main() {
       'element (repeated fragment children)',
       '<element1><element2/></element1>',
       (node) {
-        final fragment = XmlDocumentFragment([XmlElement(XmlName('element3'))]);
+        final fragment = XmlDocumentFragmentSyntheticImpl([XmlElementSyntheticImpl(createXmlName('element3'))]);
         node.children
           ..insert(0, fragment)
           ..insert(2, fragment);
@@ -363,20 +364,20 @@ void main() {
       'element (attribute range error)',
       '<element attr1="value1"/>',
       (node) =>
-          node.attributes.insert(2, XmlAttribute(XmlName('attr2'), 'value2')),
+          node.attributes.insert(2, XmlAttributeSyntheticImpl(createXmlName('attr2'), 'value2')),
       throwsRangeError,
     );
     throwingTest(
       'element (children range error)',
       '<element>Hello</element>',
-      (node) => node.children.insert(2, XmlText(' World')),
+      (node) => node.children.insert(2, XmlTextSyntheticImpl(' World')),
       throwsRangeError,
     );
     throwingTest(
       'element (attribute children)',
       '<element/>',
       (node) {
-        final wrong = XmlAttribute(XmlName('invalid'), 'invalid');
+        final wrong = XmlAttributeSyntheticImpl(createXmlName('invalid'), 'invalid');
         node.children.insert(0, wrong);
       },
       throwsA(isXmlNodeTypeException),
@@ -393,13 +394,13 @@ void main() {
       'element (attributes)',
       '<element attr1="value1"/>',
       (node) => node.attributes
-          .insertAll(1, [XmlAttribute(XmlName('attr2'), 'value2')]),
+          .insertAll(1, [XmlAttributeSyntheticImpl(createXmlName('attr2'), 'value2')]),
       '<element attr1="value1" attr2="value2"/>',
     );
     mutatingTest(
       'element (children)',
       '<element>Hello</element>',
-      (node) => node.children.insertAll(1, [XmlText(' World')]),
+      (node) => node.children.insertAll(1, [XmlTextSyntheticImpl(' World')]),
       '<element>Hello World</element>',
     );
     mutatingTest(
@@ -419,10 +420,10 @@ void main() {
       'element (fragment children)',
       '<element1><element2/></element1>',
       (node) {
-        final fragment = XmlDocumentFragment([
-          XmlText('Hello'),
-          XmlElement(XmlName('element3')),
-          XmlComment('comment'),
+        final fragment = XmlDocumentFragmentSyntheticImpl([
+          XmlTextSyntheticImpl('Hello'),
+          XmlElementSyntheticImpl(createXmlName('element3')),
+          XmlCommentSyntheticImpl('comment'),
         ]);
         node.children.insertAll(1, [fragment]);
       },
@@ -432,7 +433,7 @@ void main() {
       'element (repeated fragment children)',
       '<element1><element2/></element1>',
       (node) {
-        final fragment = XmlDocumentFragment([XmlElement(XmlName('element3'))]);
+        final fragment = XmlDocumentFragmentSyntheticImpl([XmlElementSyntheticImpl(createXmlName('element3'))]);
         node.children.insertAll(0, [fragment, fragment]);
       },
       '<element1><element3/><element3/><element2/></element1>',
@@ -441,20 +442,20 @@ void main() {
       'element (attribute range error)',
       '<element attr1="value1"/>',
       (node) => node.attributes
-          .insertAll(2, [XmlAttribute(XmlName('attr2'), 'value2')]),
+          .insertAll(2, [XmlAttributeSyntheticImpl(createXmlName('attr2'), 'value2')]),
       throwsRangeError,
     );
     throwingTest(
       'element (children range error)',
       '<element>Hello</element>',
-      (node) => node.children.insertAll(2, [XmlText(' World')]),
+      (node) => node.children.insertAll(2, [XmlTextSyntheticImpl(' World')]),
       throwsRangeError,
     );
     throwingTest(
       'element (attribute children)',
       '<element/>',
       (node) {
-        final wrong = XmlAttribute(XmlName('invalid'), 'invalid');
+        final wrong = XmlAttributeSyntheticImpl(createXmlName('invalid'), 'invalid');
         node.children.insertAll(0, [wrong]);
       },
       throwsA(isXmlNodeTypeException),
@@ -470,32 +471,32 @@ void main() {
     mutatingTest(
       'element (attributes)',
       '<element attr1="value1"/>',
-      (node) => node.attributes[0] = XmlAttribute(XmlName('attr2'), 'value2'),
+      (node) => node.attributes[0] = XmlAttributeSyntheticImpl(createXmlName('attr2'), 'value2'),
       '<element attr2="value2"/>',
     );
     mutatingTest(
       'element (children)',
       '<element>Hello World</element>',
-      (node) => node.children[0] = XmlText('Dart rocks'),
+      (node) => node.children[0] = XmlTextSyntheticImpl('Dart rocks'),
       '<element>Dart rocks</element>',
     );
     throwingTest(
       'element (attribute range error)',
       '<element attr1="value1"/>',
-      (node) => node.attributes[2] = XmlAttribute(XmlName('attr2'), 'value2'),
+      (node) => node.attributes[2] = XmlAttributeSyntheticImpl(createXmlName('attr2'), 'value2'),
       throwsRangeError,
     );
     throwingTest(
       'element (children range error)',
       '<element>Hello</element>',
-      (node) => node.children[2] = XmlText(' World'),
+      (node) => node.children[2] = XmlTextSyntheticImpl(' World'),
       throwsRangeError,
     );
     throwingTest(
       'element (attribute children)',
       '<element1><element2/></element1>',
       (node) {
-        final wrong = XmlAttribute(XmlName('invalid'), 'invalid');
+        final wrong = XmlAttributeSyntheticImpl(createXmlName('invalid'), 'invalid');
         node.children[0] = wrong;
       },
       throwsA(isXmlNodeTypeException),
@@ -524,7 +525,7 @@ void main() {
       'element (attribute children)',
       '<element>Hello World</element>',
       (node) {
-        final wrong = XmlAttribute(XmlName('invalid'), 'invalid');
+        final wrong = XmlAttributeSyntheticImpl(createXmlName('invalid'), 'invalid');
         node.children.remove(wrong);
       },
       '<element>Hello World</element>',
@@ -659,7 +660,7 @@ void main() {
       'element (attributes)',
       '<element attr1="value1" attr2="value2"/>',
       (node) => node.attributes.setRange(0, 1, [
-        XmlAttribute(XmlName('attr3'), 'value3'),
+        XmlAttributeSyntheticImpl(createXmlName('attr3'), 'value3'),
       ]),
       '<element attr3="value3" attr2="value2"/>',
     );
@@ -667,9 +668,9 @@ void main() {
       'element (attributes range error)',
       '<element attr1="value1" attr2="value2"/>',
       (node) => node.attributes.setRange(0, 3, [
-        XmlAttribute(XmlName('attr3'), 'value3'),
-        XmlAttribute(XmlName('attr4'), 'value4'),
-        XmlAttribute(XmlName('attr5'), 'value5'),
+        XmlAttributeSyntheticImpl(createXmlName('attr3'), 'value3'),
+        XmlAttributeSyntheticImpl(createXmlName('attr4'), 'value4'),
+        XmlAttributeSyntheticImpl(createXmlName('attr5'), 'value5'),
       ]),
       throwsRangeError,
     );
@@ -677,7 +678,7 @@ void main() {
       'element (children)',
       '<element1><element2/><element3/></element1>',
       (node) => node.children.setRange(1, 2, [
-        XmlElement(XmlName('element4')),
+        XmlElementSyntheticImpl(createXmlName('element4')),
       ]),
       '<element1><element2/><element4/></element1>',
     );
@@ -685,9 +686,9 @@ void main() {
       'element (children range error',
       '<element1><element2/><element3/></element1>',
       (node) => node.children.setRange(0, 3, [
-        XmlElement(XmlName('element4')),
-        XmlElement(XmlName('element5')),
-        XmlElement(XmlName('element6')),
+        XmlElementSyntheticImpl(createXmlName('element4')),
+        XmlElementSyntheticImpl(createXmlName('element5')),
+        XmlElementSyntheticImpl(createXmlName('element6')),
       ]),
       throwsRangeError,
     );
@@ -696,44 +697,44 @@ void main() {
     mutatingTest(
       'element node with text',
       '<element><child/></element>',
-      (node) => node.firstChild!.replace(XmlText('child')),
+      (node) => node.firstChild!.replace(XmlTextSyntheticImpl('child')),
       '<element>child</element>',
     );
     mutatingTest(
       'element text with node',
       '<element>child</element>',
-      (node) => node.firstChild!.replace(XmlElement(XmlName('child'))),
+      (node) => node.firstChild!.replace(XmlElementSyntheticImpl(createXmlName('child'))),
       '<element><child/></element>',
     );
     mutatingTest(
       'element text with empty fragment',
       '<element><child/></element>',
-      (node) => node.firstChild!.replace(XmlDocumentFragment()),
+      (node) => node.firstChild!.replace(XmlDocumentFragmentSyntheticImpl()),
       '<element/>',
     );
     mutatingTest(
       'element text with one element fragment',
       '<element><child/></element>',
-      (node) => node.firstChild!.replace(XmlDocumentFragment([
-        XmlText('child'),
+      (node) => node.firstChild!.replace(XmlDocumentFragmentSyntheticImpl([
+        XmlTextSyntheticImpl('child'),
       ])),
       '<element>child</element>',
     );
     mutatingTest(
       'element text with multiple element fragment',
       '<element><child/></element>',
-      (node) => node.firstChild!.replace(XmlDocumentFragment([
-        XmlElement(XmlName('child1')),
-        XmlElement(XmlName('child2')),
+      (node) => node.firstChild!.replace(XmlDocumentFragmentSyntheticImpl([
+        XmlElementSyntheticImpl(createXmlName('child1')),
+        XmlElementSyntheticImpl(createXmlName('child2')),
       ])),
       '<element><child1/><child2/></element>',
     );
     mutatingTest(
       'element node with multiple element fragment',
       '<element>before<child/>after</element>',
-      (node) => node.children[1].replace(XmlDocumentFragment([
-        XmlElement(XmlName('child1')),
-        XmlElement(XmlName('child2')),
+      (node) => node.children[1].replace(XmlDocumentFragmentSyntheticImpl([
+        XmlElementSyntheticImpl(createXmlName('child1')),
+        XmlElementSyntheticImpl(createXmlName('child2')),
       ])),
       '<element>before<child1/><child2/>after</element>',
     );
@@ -743,16 +744,16 @@ void main() {
       'element (attributes)',
       '<element attr1="value1" attr2="value2"/>',
       (node) => node.attributes
-          .replaceRange(0, 1, [XmlAttribute(XmlName('attr3'), 'value3')]),
+          .replaceRange(0, 1, [XmlAttributeSyntheticImpl(createXmlName('attr3'), 'value3')]),
       '<element attr3="value3" attr2="value2"/>',
     );
     throwingTest(
       'element (attributes range error)',
       '<element attr1="value1" attr2="value2"/>',
       (node) => node.attributes.replaceRange(0, 3, [
-        XmlAttribute(XmlName('attr3'), 'value3'),
-        XmlAttribute(XmlName('attr4'), 'value4'),
-        XmlAttribute(XmlName('attr5'), 'value5')
+        XmlAttributeSyntheticImpl(createXmlName('attr3'), 'value3'),
+        XmlAttributeSyntheticImpl(createXmlName('attr4'), 'value4'),
+        XmlAttributeSyntheticImpl(createXmlName('attr5'), 'value5')
       ]),
       throwsRangeError,
     );
@@ -760,16 +761,16 @@ void main() {
       'element (children)',
       '<element1><element2/><element3/></element1>',
       (node) =>
-          node.children.replaceRange(1, 2, [XmlElement(XmlName('element4'))]),
+          node.children.replaceRange(1, 2, [XmlElementSyntheticImpl(createXmlName('element4'))]),
       '<element1><element2/><element4/></element1>',
     );
     throwingTest(
       'element (children range error',
       '<element1><element2/><element3/></element1>',
       (node) => node.children.replaceRange(0, 3, [
-        XmlElement(XmlName('element4')),
-        XmlElement(XmlName('element5')),
-        XmlElement(XmlName('element6')),
+        XmlElementSyntheticImpl(createXmlName('element4')),
+        XmlElementSyntheticImpl(createXmlName('element5')),
+        XmlElementSyntheticImpl(createXmlName('element6')),
       ]),
       throwsRangeError,
     );

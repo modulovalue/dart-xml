@@ -1,5 +1,4 @@
-import 'dart:convert'
-    show Converter, StringConversionSink, StringConversionSinkBase;
+import 'dart:convert' show Converter, StringConversionSink, StringConversionSinkBase;
 
 import 'package:petitparser/petitparser.dart';
 
@@ -18,16 +17,14 @@ extension XmlEventDecoderExtension on Stream<String> {
 
 /// A converter that decodes a [String] to a sequence of [XmlEvent] objects.
 class XmlEventDecoder extends Converter<String, List<XmlEvent>> {
-  XmlEventDecoder({XmlEntityMapping? entityMapping})
-      : entityMapping = entityMapping ?? defaultEntityMapping;
+  XmlEventDecoder({XmlEntityMapping? entityMapping}) : entityMapping = entityMapping ?? defaultEntityMapping;
 
   final XmlEntityMapping entityMapping;
 
   @override
   List<XmlEvent> convert(String input, [int start = 0, int? end]) {
     end = RangeError.checkValidRange(start, end, input.length);
-    return XmlEventIterable(input.substring(start, end), entityMapping)
-        .toList(growable: false);
+    return XmlEventIterable(input.substring(start, end), entityMapping).toList(growable: false);
   }
 
   @override

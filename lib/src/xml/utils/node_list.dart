@@ -1,9 +1,9 @@
 import 'package:collection/collection.dart' show DelegatingList;
 import 'package:meta/meta.dart';
 
-import '../nodes/node.dart';
+import '../nodes/interface.dart';
+import '../visitors/node_type.dart';
 import 'exceptions.dart';
-import 'node_type.dart';
 
 /// Mutable list of XmlNodes, manages the parenting of the nodes.
 class XmlNodeList<E extends XmlNode> extends DelegatingList<E> {
@@ -23,7 +23,7 @@ class XmlNodeList<E extends XmlNode> extends DelegatingList<E> {
   @override
   void operator []=(int index, E value) {
     RangeError.checkValidIndex(index, this);
-    if (value.nodeType == XmlNodeType.DOCUMENT_FRAGMENT) {
+    if (value.accept(const XmlVisitorNodeType()) == XmlNodeType.DOCUMENT_FRAGMENT) {
       replaceRange(index, index + 1, _expandFragment(value));
     } else {
       XmlNodeTypeException.checkValidType(value, _nodeTypes);
@@ -35,12 +35,11 @@ class XmlNodeList<E extends XmlNode> extends DelegatingList<E> {
   }
 
   @override
-  set length(int length) =>
-      throw UnsupportedError('Unsupported length change of node list.');
+  set length(int length) => throw UnsupportedError('Unsupported length change of node list.');
 
   @override
   void add(E value) {
-    if (value.nodeType == XmlNodeType.DOCUMENT_FRAGMENT) {
+    if (value.accept(const XmlVisitorNodeType()) == XmlNodeType.DOCUMENT_FRAGMENT) {
       addAll(_expandFragment(value));
     } else {
       XmlNodeTypeException.checkValidType(value, _nodeTypes);
@@ -149,7 +148,7 @@ class XmlNodeList<E extends XmlNode> extends DelegatingList<E> {
 
   @override
   void insert(int index, E element) {
-    if (element.nodeType == XmlNodeType.DOCUMENT_FRAGMENT) {
+    if (element.accept(const XmlVisitorNodeType()) == XmlNodeType.DOCUMENT_FRAGMENT) {
       insertAll(index, _expandFragment(element));
     } else {
       XmlNodeTypeException.checkValidType(element, _nodeTypes);
@@ -183,7 +182,7 @@ class XmlNodeList<E extends XmlNode> extends DelegatingList<E> {
   Iterable<E> _expandNodes(Iterable<E> iterable) {
     final expanded = <E>[];
     for (final node in iterable) {
-      if (node.nodeType == XmlNodeType.DOCUMENT_FRAGMENT) {
+      if (node.accept(const XmlVisitorNodeType()) == XmlNodeType.DOCUMENT_FRAGMENT) {
         expanded.addAll(_expandFragment(node));
       } else {
         XmlNodeTypeException.checkValidType(node, _nodeTypes);

@@ -4,17 +4,7 @@ import '../../xml/entities/default_mapping.dart';
 import '../../xml/entities/entity_mapping.dart';
 import '../../xml/utils/token.dart';
 import '../event.dart';
-import '../events/cdata.dart';
-import '../events/comment.dart';
-import '../events/declaration.dart';
-import '../events/doctype.dart';
-import '../events/end_element.dart';
-import '../events/processing.dart';
-import '../events/start_element.dart';
-import '../events/text.dart';
 import '../utils/conversion_sink.dart';
-import '../utils/event_attribute.dart';
-import '../visitor.dart';
 
 extension XmlEventEncoderExtension on Stream<List<XmlEvent>> {
   /// Converts a sequence of [XmlEvent] objects to a [String].
@@ -24,8 +14,7 @@ extension XmlEventEncoderExtension on Stream<List<XmlEvent>> {
 
 /// A converter that encodes a sequence of [XmlEvent] objects to a [String].
 class XmlEventEncoder extends Converter<List<XmlEvent>, String> {
-  XmlEventEncoder({XmlEntityMapping? entityMapping})
-      : entityMapping = entityMapping ?? defaultEntityMapping;
+  XmlEventEncoder({XmlEntityMapping? entityMapping}) : entityMapping = entityMapping ?? defaultEntityMapping;
 
   final XmlEntityMapping entityMapping;
 
@@ -40,20 +29,22 @@ class XmlEventEncoder extends Converter<List<XmlEvent>, String> {
   }
 
   @override
-  ChunkedConversionSink<List<XmlEvent>> startChunkedConversion(
-          Sink<String> sink) =>
+  ChunkedConversionSink<List<XmlEvent>> startChunkedConversion(Sink<String> sink) =>
       _XmlEventEncoderSink(sink, entityMapping);
 }
 
-class _XmlEventEncoderSink extends ChunkedConversionSink<List<XmlEvent>>
-    with XmlEventVisitor {
+class _XmlEventEncoderSink extends ChunkedConversionSink<List<XmlEvent>> implements XmlEventVisitor<void> {
   _XmlEventEncoderSink(this.sink, this.entityMapping);
 
   final Sink<String> sink;
   final XmlEntityMapping entityMapping;
 
   @override
-  void add(List<XmlEvent> chunk) => chunk.forEach(visit);
+  void add(List<XmlEvent> chunk) {
+    for (final a in chunk) {
+      a.accept(this);
+    }
+  }
 
   @override
   void close() => sink.close();

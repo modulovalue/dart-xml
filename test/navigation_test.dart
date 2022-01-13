@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:xml/xml.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
 
 void verifyIterator(Iterable iterable) {
   final iterator = iterable.iterator;
@@ -14,7 +14,7 @@ void main() {
       '<title lang="en" price="12.00">XML</title>'
       '<description/>'
       '</book>';
-  final book = XmlDocument.parse(bookXml);
+  final book = parseXmlDocument(bookXml);
   test('ancestors', () {
     expect(book.ancestors, []);
     expect(book.children[0].ancestors, [book]);

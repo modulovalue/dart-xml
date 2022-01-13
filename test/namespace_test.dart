@@ -1,10 +1,11 @@
 import 'package:test/test.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/xml.dart';
 
 void main() {
   test('default namespace', () {
     final document =
-        XmlDocument.parse('<html xmlns="http://www.w3.org/1999/xhtml">'
+    parseXmlDocument('<html xmlns="http://www.w3.org/1999/xhtml">'
             '  <body lang="en"/>'
             '</html>');
     final nodes = List.from(document.descendants)..add(document);
@@ -18,7 +19,7 @@ void main() {
     }
   });
   test('prefix namespace', () {
-    final document = XmlDocument.parse(
+    final document = parseXmlDocument(
         '<xhtml:html xmlns:xhtml="http://www.w3.org/1999/xhtml">'
         '  <xhtml:body xhtml:lang="en"/>'
         '</xhtml:html>');

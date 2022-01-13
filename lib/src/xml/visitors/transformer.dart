@@ -1,59 +1,52 @@
-import '../nodes/attribute.dart';
-import '../nodes/cdata.dart';
-import '../nodes/comment.dart';
-import '../nodes/declaration.dart';
-import '../nodes/doctype.dart';
-import '../nodes/document.dart';
-import '../nodes/document_fragment.dart';
-import '../nodes/element.dart';
-import '../nodes/processing.dart';
-import '../nodes/text.dart';
-import '../utils/name.dart';
-import 'visitor.dart';
+import '../nodes/synthetic_impl.dart';
+import '../nodes/interface.dart';
+import '../nodes/parse.dart';
 
 /// Transformer that creates an identical copy of the visited nodes.
 ///
 /// Subclass can override one or more of the methods to modify the generated
 /// copy.
-class XmlTransformer with XmlVisitor {
+class XmlTransformer implements XmlVisitor<XmlNode> {
   const XmlTransformer();
 
   @override
-  XmlAttribute visitAttribute(XmlAttribute node) =>
-      XmlAttribute(visit(node.name), node.value, node.attributeType);
+  XmlCDATA visitCDATA(XmlCDATA node) => XmlCDATASyntheticImpl(node.text);
 
   @override
-  XmlCDATA visitCDATA(XmlCDATA node) => XmlCDATA(node.text);
-
-  @override
-  XmlComment visitComment(XmlComment node) => XmlComment(node.text);
+  XmlComment visitComment(XmlComment node) => XmlCommentSyntheticImpl(node.text);
 
   @override
   XmlDeclaration visitDeclaration(XmlDeclaration node) =>
-      XmlDeclaration(node.attributes.map(visit));
+      XmlDeclarationSyntheticImpl(node.attributes.map(visitAttribute));
 
   @override
-  XmlDoctype visitDoctype(XmlDoctype node) => XmlDoctype(node.text);
+  XmlDoctype visitDoctype(XmlDoctype node) => XmlDoctypeSyntheticImpl(node.text);
 
   @override
   XmlDocument visitDocument(XmlDocument node) =>
-      XmlDocument(node.children.map(visit));
+      XmlDocumentSyntheticImpl(node.children.map((final a) => a.accept(this)));
 
   @override
   XmlDocumentFragment visitDocumentFragment(XmlDocumentFragment node) =>
-      XmlDocumentFragment(node.children.map(visit));
+      XmlDocumentFragmentSyntheticImpl(node.children.map((final a) => a.accept(this)));
 
   @override
-  XmlElement visitElement(XmlElement node) => XmlElement(visit(node.name),
-      node.attributes.map(visit), node.children.map(visit), node.isSelfClosing);
+  XmlElement visitElement(XmlElement node) => XmlElementSyntheticImpl(
+      visitName(node.name),
+      node.attributes.map(visitAttribute),
+      node.children.map((final a) => a.accept(this)),
+      node.isSelfClosing);
 
   @override
-  XmlName visitName(XmlName name) => XmlName.fromString(name.qualified);
+  XmlProcessing visitProcessing(XmlProcessing node) => XmlProcessingSyntheticImpl(node.target, node.text);
 
   @override
-  XmlProcessing visitProcessing(XmlProcessing node) =>
-      XmlProcessing(node.target, node.text);
+  XmlText visitText(XmlText node) => XmlTextSyntheticImpl(node.text);
 
   @override
-  XmlText visitText(XmlText node) => XmlText(node.text);
+  XmlAttribute visitAttribute(XmlAttribute node) =>
+      XmlAttributeSyntheticImpl(visitName(node.name), node.value, node.attributeType);
+
+  @override
+  XmlName visitName(XmlName name) => createXmlNameFromString(name.qualified);
 }

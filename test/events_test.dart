@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:math' show min, Random;
 
 import 'package:test/test.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
+import 'package:xml/src/xml/visitors/node_type.dart';
+import 'package:xml/src/xml_events/event.dart';
 import 'package:xml/xml.dart';
 import 'package:xml/xml_events.dart';
 
@@ -226,11 +229,11 @@ void main() {
                 XmlDocument document, int Function() splitter)
             callback) {
       group(title, () {
-        final string = XmlDocument.parse(input).toXmlString(pretty: true);
+        final string = parseXmlDocument(input).toXmlString(pretty: true);
         for (var i = string.length; i > 0; i ~/= 2) {
           test('chunks sized $i', () {
             final events = parseEvents(string).toList(growable: false);
-            final document = XmlDocument.parse(string);
+            final document = parseXmlDocument(string);
             callback(string, events, document, () => i);
           });
         }
@@ -238,7 +241,7 @@ void main() {
         for (var i = 1; i <= 64; i *= 2) {
           test('chunks randomly sized up to $i', () {
             final events = parseEvents(string).toList(growable: false);
-            final document = XmlDocument.parse(string);
+            final document = parseXmlDocument(string);
             callback(string, events, document, () => random.nextInt(i + 1));
           });
         }

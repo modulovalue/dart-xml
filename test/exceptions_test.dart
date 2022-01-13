@@ -1,4 +1,5 @@
 import 'package:test/test.dart';
+import 'package:xml/src/xml/visitors/node_type.dart';
 import 'package:xml/xml.dart';
 
 import 'assertions.dart';
@@ -32,10 +33,10 @@ void main() {
   group('XmlNodeTypeException', () {
     test('checkValidType', () {
       XmlNodeTypeException.checkValidType(
-          XmlComment('Comment'), [XmlNodeType.COMMENT]);
+          XmlCommentSyntheticImpl('Comment'), [XmlNodeType.COMMENT]);
       expect(
           () => XmlNodeTypeException.checkValidType(
-              XmlComment('Comment'), [XmlNodeType.ATTRIBUTE]),
+              XmlCommentSyntheticImpl('Comment'), [XmlNodeType.ATTRIBUTE]),
           throwsA(isXmlNodeTypeException.having(
               (value) => value.toString(),
               'toString',
@@ -44,7 +45,7 @@ void main() {
   });
   group('XmlParentException', () {
     test('checkNoParent', () {
-      final document = XmlDocument([XmlComment('Comment')]);
+      final document = XmlDocumentSyntheticImpl([XmlCommentSyntheticImpl('Comment')]);
       XmlParentException.checkNoParent(document);
       expect(
           () => XmlParentException.checkNoParent(document.firstChild!),
@@ -54,7 +55,7 @@ void main() {
               contains('Node already has a parent, copy or remove it first'))));
     });
     test('checkMatchingParent', () {
-      final document = XmlDocument([XmlComment('Comment')]);
+      final document = XmlDocumentSyntheticImpl([XmlCommentSyntheticImpl('Comment')]);
       XmlParentException.checkMatchingParent(document.firstChild!, document);
       expect(
           () => XmlParentException.checkMatchingParent(

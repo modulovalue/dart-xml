@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:xml/xml.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
 
 final HttpClient httpClient = HttpClient();
 
@@ -28,7 +28,7 @@ Future<void> main(List<String> arguments) async {
     final response = await request.close();
     final stream = response.transform(utf8.decoder);
     final contents = await stream.join();
-    final document = XmlDocument.parse(contents);
+    final document = parseXmlDocument(contents);
     writeCell(sourceCurrency);
     for (final targetCurrency in currencies) {
       if (sourceCurrency == targetCurrency) {

@@ -1,5 +1,4 @@
-import '../nodes/attribute.dart';
-import '../nodes/node.dart';
+import '../nodes/interface.dart';
 
 // XML namespace declarations.
 const String xml = 'xml';
@@ -29,8 +28,7 @@ String? lookupNamespacePrefix(XmlNode? start, String uri) {
       if (attribute.value == uri) {
         if (attribute.name.prefix == xmlns) {
           return attribute.name.local;
-        } else if (attribute.name.prefix == null &&
-            attribute.name.local == xmlns) {
+        } else if (attribute.name.prefix == null && attribute.name.local == xmlns) {
           return '';
         }
       }

@@ -1,6 +1,5 @@
-import '../mixins/has_parent.dart';
-import '../nodes/node.dart';
-import 'node_type.dart';
+import '../nodes/interface.dart';
+import '../visitors/node_type.dart';
 
 /// Abstract exception class.
 abstract class XmlException implements Exception {
@@ -14,8 +13,7 @@ abstract class XmlException implements Exception {
 /// Exception thrown when parsing of an XML document fails.
 class XmlParserException extends XmlException implements FormatException {
   /// Creates a new XmlParserException.
-  XmlParserException(String message,
-      {this.buffer, this.position = 0, this.line = 0, this.column = 0})
+  XmlParserException(String message, {this.buffer, this.position = 0, this.line = 0, this.column = 0})
       : super(message);
 
   /// The source input which caused the error.
@@ -47,7 +45,7 @@ class XmlNodeTypeException extends XmlException {
 
   /// Ensure that [node] is of one of the provided [types].
   static void checkValidType(XmlNode node, Iterable<XmlNodeType> types) {
-    if (!types.contains(node.nodeType)) {
+    if (!types.contains(node.accept(const XmlVisitorNodeType()))) {
       throw XmlNodeTypeException('Expected node of type: ${types.join(', ')}');
     }
   }
@@ -62,15 +60,14 @@ class XmlParentException extends XmlException {
   XmlParentException(String message) : super(message);
 
   /// Ensure that [node] has no parent.
-  static void checkNoParent(XmlParentBase node) {
+  static void checkNoParent(XmlParentable node) {
     if (node.parent != null) {
-      throw XmlParentException(
-          'Node already has a parent, copy or remove it first: $node');
+      throw XmlParentException('Node already has a parent, copy or remove it first: $node');
     }
   }
 
   /// Ensure that [node] has a matching parent.
-  static void checkMatchingParent(XmlParentBase node, XmlNode parent) {
+  static void checkMatchingParent(XmlParentable node, XmlNode parent) {
     if (node.parent != parent) {
       // If this exception is ever thrown, this is likely a bug in the internal
       // code of the library.
@@ -89,8 +86,7 @@ class XmlTagException extends XmlException {
 
   /// Creates a new XmlTagException where [expectedName] was expected, but
   /// instead we found [actualName].
-  factory XmlTagException.mismatchClosingTag(
-          String expectedName, String actualName) =>
+  factory XmlTagException.mismatchClosingTag(String expectedName, String actualName) =>
       XmlTagException('Expected closing tag </$expectedName>, '
           'but found </$actualName>.');
 
@@ -99,8 +95,7 @@ class XmlTagException extends XmlException {
       XmlTagException('Unexpected closing tag </$name>.');
 
   /// Creates a new XmlTagException for a missing closing tag.
-  factory XmlTagException.missingClosingTag(String name) =>
-      XmlTagException('Missing closing tag </$name>.');
+  factory XmlTagException.missingClosingTag(String name) => XmlTagException('Missing closing tag </$name>.');
 
   /// Ensure that the [expected] tag matches the [actual] one.
   static void checkClosingTag(String expected, String actual) {

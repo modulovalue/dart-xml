@@ -1,12 +1,12 @@
 import 'package:test/test.dart';
-import 'package:xml/xml.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
 
 import 'examples.dart';
 
 void main() {
   group('elements', () {
-    final bookstore = XmlDocument.parse(bookstoreXml).rootElement;
-    final shiporder = XmlDocument.parse(shiporderXsd).rootElement;
+    final bookstore = parseXmlDocument(bookstoreXml).rootElement;
+    final shiporder = parseXmlDocument(shiporderXsd).rootElement;
     const xsd = 'http://www.w3.org/2001/XMLSchema';
     test('name defined, namespace undefined', () {
       final books = bookstore.findElements('book');
@@ -46,8 +46,8 @@ void main() {
     });
   });
   group('all elements', () {
-    final bookstore = XmlDocument.parse(bookstoreXml);
-    final shiporder = XmlDocument.parse(shiporderXsd);
+    final bookstore = parseXmlDocument(bookstoreXml);
+    final shiporder = parseXmlDocument(shiporderXsd);
     const xsd = 'http://www.w3.org/2001/XMLSchema';
     test('name defined, namespace undefined', () {
       final books = bookstore.findAllElements('book');

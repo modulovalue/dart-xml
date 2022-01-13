@@ -1,15 +1,16 @@
 import 'package:test/test.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/xml.dart';
 
 void main() {
   group('normalizer', () {
     test('remove empty text', () {
-      final element = XmlElement(XmlName('element'), [], [
-        XmlText(''),
-        XmlElement(XmlName('element1')),
-        XmlText(''),
-        XmlElement(XmlName('element2')),
-        XmlText(''),
+      final element = XmlElementSyntheticImpl(createXmlName('element'), [], [
+        XmlTextSyntheticImpl(''),
+        XmlElementSyntheticImpl(createXmlName('element1')),
+        XmlTextSyntheticImpl(''),
+        XmlElementSyntheticImpl(createXmlName('element2')),
+        XmlTextSyntheticImpl(''),
       ]);
       element.normalize();
       expect(element.children.length, 2);
@@ -17,33 +18,33 @@ void main() {
           element.toXmlString(), '<element><element1/><element2/></element>');
     });
     test('join adjacent text', () {
-      final element = XmlElement(XmlName('element'), [], [
-        XmlText('aaa'),
-        XmlText('bbb'),
-        XmlText('ccc'),
+      final element = XmlElementSyntheticImpl(createXmlName('element'), [], [
+        XmlTextSyntheticImpl('aaa'),
+        XmlTextSyntheticImpl('bbb'),
+        XmlTextSyntheticImpl('ccc'),
       ]);
       element.normalize();
       expect(element.children.length, 1);
       expect(element.toXmlString(), '<element>aaabbbccc</element>');
     });
     test('document fragment', () {
-      final fragment = XmlDocumentFragment([
-        XmlText(''),
-        XmlText('aaa'),
-        XmlText(''),
-        XmlElement(XmlName('element1')),
-        XmlText(''),
-        XmlText('bbb'),
-        XmlText(''),
-        XmlText('ccc'),
-        XmlText(''),
-        XmlElement(XmlName('element2')),
-        XmlText(''),
-        XmlText('ddd'),
-        XmlText(''),
+      final fragment = XmlDocumentFragmentSyntheticImpl([
+        XmlTextSyntheticImpl(''),
+        XmlTextSyntheticImpl('aaa'),
+        XmlTextSyntheticImpl(''),
+        XmlElementSyntheticImpl(createXmlName('element1')),
+        XmlTextSyntheticImpl(''),
+        XmlTextSyntheticImpl('bbb'),
+        XmlTextSyntheticImpl(''),
+        XmlTextSyntheticImpl('ccc'),
+        XmlTextSyntheticImpl(''),
+        XmlElementSyntheticImpl(createXmlName('element2')),
+        XmlTextSyntheticImpl(''),
+        XmlTextSyntheticImpl('ddd'),
+        XmlTextSyntheticImpl(''),
       ]);
       fragment.normalize();
-      final element = XmlElement(XmlName('element'));
+      final element = XmlElementSyntheticImpl(createXmlName('element'));
       element.children.add(fragment);
       expect(element.children.length, 5);
       expect(element.toXmlString(),
@@ -51,7 +52,7 @@ void main() {
     });
   });
   group('writer', () {
-    final document = XmlDocument.parse('<body>\n'
+    final document = parseXmlDocument('<body>\n'
         '  <a>\tWhat\r the  heck?\n</a>\n'
         '  <b>\tWhat\r the  heck?\n</b>\n'
         '</body>');
@@ -115,7 +116,7 @@ void main() {
             '</body>');
       });
       test('preserve nested', () {
-        final input = XmlDocument.parse('<html><body>'
+        final input = parseXmlDocument('<html><body>'
             '<p><b>bold</b>, <i>italic</i> and <b><i>both</i></b>.</p>'
             '</body></html>');
         final output = input.toXmlString(
@@ -131,12 +132,12 @@ void main() {
             '</html>');
       });
       test('normalize text', () {
-        final input = XmlDocument([
-          XmlElement(XmlName.fromString('contents'), [], [
-            XmlText(' Hello '),
-            XmlText('   '),
-            XmlText(' World '),
-            XmlText(' '),
+        final input = XmlDocumentSyntheticImpl([
+          XmlElementSyntheticImpl(createXmlNameFromString('contents'), [], [
+            XmlTextSyntheticImpl(' Hello '),
+            XmlTextSyntheticImpl('   '),
+            XmlTextSyntheticImpl(' World '),
+            XmlTextSyntheticImpl(' '),
           ])
         ]);
         final output = input.toXmlString(pretty: true);
@@ -149,7 +150,7 @@ void main() {
           '<b a="1" b="2">BBB</b>'
           '<c a="1" b="2" c="3">CCC</c>'
           '</body>';
-      final document = XmlDocument.parse(input);
+      final document = parseXmlDocument(input);
       tearDown(() => expect(document.toXmlString(), input,
           reason: 'Modified the original DOM.'));
       test('indent none', () {
@@ -279,16 +280,16 @@ void main() {
             '</body>');
       });
       test('insert space before self-closing', () {
-        final element = XmlElement(
-          XmlName('base'),
+        final element = XmlElementSyntheticImpl(
+          createXmlName('base'),
           [],
           [
-            XmlElement(XmlName('simple')),
-            XmlElement(
-              XmlName('with-attributes'),
-              [XmlAttribute(XmlName('attr'), 'val')],
+            XmlElementSyntheticImpl(createXmlName('simple')),
+            XmlElementSyntheticImpl(
+              createXmlName('with-attributes'),
+              [XmlAttributeSyntheticImpl(createXmlName('attr'), 'val')],
             ),
-            XmlElement(XmlName('do-not-add')),
+            XmlElementSyntheticImpl(createXmlName('do-not-add')),
           ],
         );
 

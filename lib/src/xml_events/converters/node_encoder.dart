@@ -1,26 +1,7 @@
 import 'dart:convert' show ChunkedConversionSink;
 
-import '../../xml/nodes/attribute.dart';
-import '../../xml/nodes/cdata.dart';
-import '../../xml/nodes/comment.dart';
-import '../../xml/nodes/declaration.dart';
-import '../../xml/nodes/doctype.dart';
-import '../../xml/nodes/element.dart';
-import '../../xml/nodes/node.dart';
-import '../../xml/nodes/processing.dart';
-import '../../xml/nodes/text.dart';
-import '../../xml/utils/node_list.dart';
-import '../../xml/visitors/visitor.dart';
+import '../../xml/nodes/interface.dart';
 import '../event.dart';
-import '../events/cdata.dart';
-import '../events/comment.dart';
-import '../events/declaration.dart';
-import '../events/doctype.dart';
-import '../events/end_element.dart';
-import '../events/processing.dart';
-import '../events/start_element.dart';
-import '../events/text.dart';
-import '../utils/event_attribute.dart';
 import '../utils/list_converter.dart';
 
 extension XmlNodeEncoderExtension on Stream<List<XmlNode>> {
@@ -34,19 +15,21 @@ class XmlNodeEncoder extends XmlListConverter<XmlNode, XmlEvent> {
   const XmlNodeEncoder();
 
   @override
-  ChunkedConversionSink<List<XmlNode>> startChunkedConversion(
-          Sink<List<XmlEvent>> sink) =>
+  ChunkedConversionSink<List<XmlNode>> startChunkedConversion(Sink<List<XmlEvent>> sink) =>
       _XmlNodeEncoderSink(sink);
 }
 
-class _XmlNodeEncoderSink extends ChunkedConversionSink<List<XmlNode>>
-    with XmlVisitor {
+class _XmlNodeEncoderSink extends ChunkedConversionSink<List<XmlNode>> with XmlVisitor {
   _XmlNodeEncoderSink(this.sink);
 
   final Sink<List<XmlEvent>> sink;
 
   @override
-  void add(List<XmlNode> chunk) => chunk.forEach(visit);
+  void add(List<XmlNode> chunk) {
+    for (final a in chunk) {
+      a.accept(this);
+    }
+  }
 
   @override
   void close() => sink.close();
@@ -54,12 +37,11 @@ class _XmlNodeEncoderSink extends ChunkedConversionSink<List<XmlNode>>
   @override
   void visitElement(XmlElement node) {
     final isSelfClosing = node.isSelfClosing && node.children.isEmpty;
-    sink.add([
-      XmlStartElementEvent(node.name.qualified,
-          convertAttributes(node.attributes), isSelfClosing)
-    ]);
+    sink.add([XmlStartElementEvent(node.name.qualified, convertAttributes(node.attributes), isSelfClosing)]);
     if (!isSelfClosing) {
-      node.children.forEach(visit);
+      for (final a in node.children) {
+        a.accept(this);
+      }
       sink.add([XmlEndElementEvent(node.name.qualified)]);
     }
   }
@@ -78,19 +60,28 @@ class _XmlNodeEncoderSink extends ChunkedConversionSink<List<XmlNode>>
   void visitDoctype(XmlDoctype node) => sink.add([XmlDoctypeEvent(node.text)]);
 
   @override
-  void visitProcessing(XmlProcessing node) =>
-      sink.add([XmlProcessingEvent(node.target, node.text)]);
+  void visitProcessing(XmlProcessing node) => sink.add([XmlProcessingEvent(node.target, node.text)]);
 
   @override
   void visitText(XmlText node) => sink.add([XmlTextEvent(node.text)]);
 
-  List<XmlEventAttribute> convertAttributes(
-          XmlNodeList<XmlAttribute> attributes) =>
-      attributes
-          .map((attribute) => XmlEventAttribute(
-                attribute.name.qualified,
-                attribute.value,
-                attribute.attributeType,
-              ))
-          .toList(growable: false);
+  List<XmlEventAttribute> convertAttributes(List<XmlAttribute> attributes) => attributes
+      .map((attribute) => XmlEventAttribute(
+            attribute.name.qualified,
+            attribute.value,
+            attribute.attributeType,
+          ))
+      .toList(growable: false);
+
+  @override
+  void visitAttribute(XmlAttribute node) {}
+
+  @override
+  void visitDocument(XmlDocument node) {}
+
+  @override
+  void visitDocumentFragment(XmlDocumentFragment node) {}
+
+  @override
+  void visitName(XmlName name) {}
 }

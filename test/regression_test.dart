@@ -1,11 +1,12 @@
 import 'package:test/test.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/xml.dart';
 
 import 'assertions.dart';
 
 class TrimText extends XmlTransformer {
   @override
-  XmlText visitText(XmlText node) => XmlText(node.text.trim());
+  XmlText visitText(XmlText node) => XmlTextSyntheticImpl(node.text.trim());
 }
 
 void main() {
@@ -27,7 +28,7 @@ void main() {
         <link type="image/jpeg" rel="http://opds-spec.org/image/thumbnail" href="https://covers.feedbooks.net/book/2936.jpg?size=large&amp;t=1549045871"/>
     ''';
     assertFragmentParseInvariants(input);
-    final fragment = XmlDocumentFragment.parse(input);
+    final fragment = parseXmlDocumentFragment(input);
     final href = fragment
         .findElements('link')
         .where((element) =>
@@ -46,15 +47,15 @@ void main() {
           <right>right </right>
         </root>''';
     test('transformation class', () {
-      final document = TrimText().visit<XmlDocument>(XmlDocument.parse(input));
+      final document = parseXmlDocument(input).accept<XmlNode>(TrimText()) as XmlDocument;
       expect(document.rootElement.children[1].text, 'left');
       expect(document.rootElement.children[3].text, 'both');
       expect(document.rootElement.children[5].text, 'right');
     });
     test('transformation function', () {
-      final document = XmlDocument.parse(input);
+      final document = parseXmlDocument(input);
       for (final node in document.descendants.whereType<XmlText>()) {
-        node.replace(XmlText(node.text.trim()));
+        node.replace(XmlTextSyntheticImpl(node.text.trim()));
       }
       expect(document.rootElement.children[1].text, 'left');
       expect(document.rootElement.children[3].text, 'both');
@@ -62,7 +63,7 @@ void main() {
     });
   });
   test('https://github.com/renggli/dart-xml/issues/100', () {
-    final document = XmlDocument.parse('''
+    final document = parseXmlDocument('''
         <?xml version="1.0" encoding="UTF-8"?>
         <feed xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns="http://www.w3.org/2005/Atom">
           <os:totalResults>0</os:totalResults>
@@ -74,7 +75,7 @@ void main() {
     expect(document.rootElement.getElement('os:startIndex')?.text, '1');
   });
   test('https://github.com/renggli/dart-xml/issues/104', () {
-    final document = XmlDocument.parse('''
+    final document = parseXmlDocument('''
         <?xml version="1.0"?>
         <!DOCTYPE TEI.2 PUBLIC "-//TEI P4//DTD Main DTD Driver File//EN" "http://www.tei-c.org/Guidelines/DTD/tei2.dtd"[
         <!ENTITY % TEI.XML "INCLUDE">
@@ -88,7 +89,7 @@ void main() {
   });
   test('https://stackoverflow.com/questions/68100391', () {
     const number = 20;
-    final document = XmlDocument.parse('''
+    final document = parseXmlDocument('''
         <Alarm>
           <Settings>
               <AlarmVolume type="int" min="0" max="100" unit="%">80</AlarmVolume>

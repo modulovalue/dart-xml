@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart' as args;
+import 'package:xml/src/xml_events/event.dart';
 import 'package:xml/xml_events.dart';
 
 final args.ArgParser argumentParser = args.ArgParser()

@@ -1,10 +1,11 @@
 import 'package:test/test.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/src/xml/utils/character_data_parser.dart';
 import 'package:xml/xml.dart';
 
 void expectDecode(XmlEntityMapping mapping, String input, String output) {
   final nodeText =
-      XmlDocument.parse('<data>$input</data>', entityMapping: mapping)
+      parseXmlDocument('<data>$input</data>', entityMapping: mapping)
           .rootElement
           .text;
   expect(nodeText, output, reason: 'parser decoding');

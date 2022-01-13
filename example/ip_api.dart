@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart' as args;
-import 'package:xml/xml.dart';
+import 'package:xml/src/xml/nodes/parse.dart';
+import 'package:xml/src/xml_events/event.dart';
 import 'package:xml/xml_events.dart';
 
 final HttpClient httpClient = HttpClient();
@@ -103,7 +104,7 @@ Future<void> lookupIp(args.ArgResults results, [String query = '']) async {
     // and parsed before printing any results; thought the implementation is
     // simpler.
     final input = await stream.join();
-    final document = XmlDocument.parse(input);
+    final document = parseXmlDocument(input);
     for (final element in document.rootElement.childElements) {
       stdout.writeln('${element.name}: ${element.innerText}');
     }

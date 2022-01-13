@@ -1,29 +1,11 @@
 import 'dart:convert' show ChunkedConversionSink;
 
-import '../../xml/navigation/parent.dart';
-import '../../xml/nodes/attribute.dart';
-import '../../xml/nodes/cdata.dart';
-import '../../xml/nodes/comment.dart';
-import '../../xml/nodes/declaration.dart';
-import '../../xml/nodes/doctype.dart';
-import '../../xml/nodes/element.dart';
-import '../../xml/nodes/node.dart';
-import '../../xml/nodes/processing.dart';
-import '../../xml/nodes/text.dart';
+import '../../xml/nodes/synthetic_impl.dart';
+import '../../xml/nodes/interface.dart';
+import '../../xml/nodes/parse.dart';
 import '../../xml/utils/exceptions.dart';
-import '../../xml/utils/name.dart';
 import '../event.dart';
-import '../events/cdata.dart';
-import '../events/comment.dart';
-import '../events/declaration.dart';
-import '../events/doctype.dart';
-import '../events/end_element.dart';
-import '../events/processing.dart';
-import '../events/start_element.dart';
-import '../events/text.dart';
-import '../utils/event_attribute.dart';
 import '../utils/list_converter.dart';
-import '../visitor.dart';
 
 extension XmlNodeDecoderExtension on Stream<List<XmlEvent>> {
   /// Converts a sequence of [XmlEvent] objects to [XmlNode] objects.
@@ -36,36 +18,35 @@ class XmlNodeDecoder extends XmlListConverter<XmlEvent, XmlNode> {
   const XmlNodeDecoder();
 
   @override
-  ChunkedConversionSink<List<XmlEvent>> startChunkedConversion(
-          Sink<List<XmlNode>> sink) =>
+  ChunkedConversionSink<List<XmlEvent>> startChunkedConversion(Sink<List<XmlNode>> sink) =>
       _XmlNodeDecoderSink(sink);
 }
 
-class _XmlNodeDecoderSink extends ChunkedConversionSink<List<XmlEvent>>
-    with XmlEventVisitor {
+class _XmlNodeDecoderSink extends ChunkedConversionSink<List<XmlEvent>> implements XmlEventVisitor<void> {
   _XmlNodeDecoderSink(this.sink);
 
   final Sink<List<XmlNode>> sink;
   XmlElement? parent;
 
   @override
-  void add(List<XmlEvent> chunk) => chunk.forEach(visit);
+  void add(List<XmlEvent> chunk) {
+    for (final a in chunk) {
+      a.accept(this);
+    }
+  }
 
   @override
-  void visitCDATAEvent(XmlCDATAEvent event) =>
-      commit(XmlCDATA(event.text), event);
+  void visitCDATAEvent(XmlCDATAEvent event) => commit(XmlCDATASyntheticImpl(event.text), event);
 
   @override
-  void visitCommentEvent(XmlCommentEvent event) =>
-      commit(XmlComment(event.text), event);
+  void visitCommentEvent(XmlCommentEvent event) => commit(XmlCommentSyntheticImpl(event.text), event);
 
   @override
   void visitDeclarationEvent(XmlDeclarationEvent event) =>
-      commit(XmlDeclaration(convertAttributes(event.attributes)), event);
+      commit(XmlDeclarationSyntheticImpl(convertAttributes(event.attributes)), event);
 
   @override
-  void visitDoctypeEvent(XmlDoctypeEvent event) =>
-      commit(XmlDoctype(event.text), event);
+  void visitDoctypeEvent(XmlDoctypeEvent event) => commit(XmlDoctypeSyntheticImpl(event.text), event);
 
   @override
   void visitEndElementEvent(XmlEndElementEvent event) {
@@ -82,12 +63,12 @@ class _XmlNodeDecoderSink extends ChunkedConversionSink<List<XmlEvent>>
 
   @override
   void visitProcessingEvent(XmlProcessingEvent event) =>
-      commit(XmlProcessing(event.target, event.text), event);
+      commit(XmlProcessingSyntheticImpl(event.target, event.text), event);
 
   @override
   void visitStartElementEvent(XmlStartElementEvent event) {
-    final element = XmlElement(
-      XmlName.fromString(event.name),
+    final element = XmlElementSyntheticImpl(
+      createXmlNameFromString(event.name),
       convertAttributes(event.attributes),
       [],
       event.isSelfClosing,
@@ -103,7 +84,7 @@ class _XmlNodeDecoderSink extends ChunkedConversionSink<List<XmlEvent>>
   }
 
   @override
-  void visitTextEvent(XmlTextEvent event) => commit(XmlText(event.text), event);
+  void visitTextEvent(XmlTextEvent event) => commit(XmlTextSyntheticImpl(event.text), event);
 
   @override
   void close() {
@@ -121,8 +102,8 @@ class _XmlNodeDecoderSink extends ChunkedConversionSink<List<XmlEvent>>
       for (var outerElement = node, outerEvent = event?.parentEvent;
           outerEvent != null;
           outerEvent = outerEvent.parentEvent) {
-        outerElement = XmlElement(
-          XmlName.fromString(outerEvent.name),
+        outerElement = XmlElementSyntheticImpl(
+          createXmlNameFromString(outerEvent.name),
           convertAttributes(outerEvent.attributes),
           [outerElement],
           outerEvent.isSelfClosing,
@@ -134,10 +115,7 @@ class _XmlNodeDecoderSink extends ChunkedConversionSink<List<XmlEvent>>
     }
   }
 
-  Iterable<XmlAttribute> convertAttributes(
-          Iterable<XmlEventAttribute> attributes) =>
-      attributes.map((attribute) => XmlAttribute(
-          XmlName.fromString(attribute.name),
-          attribute.value,
-          attribute.attributeType));
+  Iterable<XmlAttribute> convertAttributes(Iterable<XmlEventAttribute> attributes) =>
+      attributes.map((attribute) => XmlAttributeSyntheticImpl(
+          createXmlNameFromString(attribute.name), attribute.value, attribute.attributeType));
 }

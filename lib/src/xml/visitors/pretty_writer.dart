@@ -1,12 +1,8 @@
 import 'package:meta/meta.dart';
 
 import '../entities/entity_mapping.dart';
-import '../mixins/has_attributes.dart';
-import '../nodes/attribute.dart';
-import '../nodes/document.dart';
-import '../nodes/element.dart';
-import '../nodes/node.dart';
-import '../nodes/text.dart';
+import '../nodes/synthetic_impl.dart';
+import '../nodes/interface.dart';
 import '../utils/predicate.dart';
 import '../utils/token.dart';
 import 'writer.dart';
@@ -47,7 +43,7 @@ class XmlPrettyWriter extends XmlWriter {
   @override
   void visitElement(XmlElement node) {
     buffer.write(XmlToken.openElement);
-    visit(node.name);
+    node.name.accept(this);
     writeAttributes(node);
     if (node.children.isEmpty && node.isSelfClosing) {
       if (spaceBeforeSelfClose != null && spaceBeforeSelfClose!(node)) {
@@ -68,8 +64,7 @@ class XmlPrettyWriter extends XmlWriter {
             level++;
             buffer.write(newLine);
             buffer.write(indent * level);
-            writeIterable(
-                normalizeText(node.children), newLine + indent * level);
+            writeIterable(normalizeText(node.children), newLine + indent * level);
             level--;
             buffer.write(newLine);
             buffer.write(indent * level);
@@ -79,13 +74,13 @@ class XmlPrettyWriter extends XmlWriter {
         }
       }
       buffer.write(XmlToken.openEndElement);
-      visit(node.name);
+      node.name.accept(this);
       buffer.write(XmlToken.closeElement);
     }
   }
 
   @override
-  void writeAttributes(XmlHasAttributes node) {
+  void writeAttributes(XmlAttributes node) {
     for (final attribute in normalizeAttributes(node.attributes)) {
       if (pretty && indentAttribute != null && indentAttribute!(attribute)) {
         buffer.write(newLine);
@@ -93,7 +88,7 @@ class XmlPrettyWriter extends XmlWriter {
       } else {
         buffer.write(XmlToken.whitespace);
       }
-      visit(attribute);
+      attribute.accept(this);
     }
   }
 
@@ -114,14 +109,12 @@ class XmlPrettyWriter extends XmlWriter {
     final result = <XmlNode>[];
     for (final node in nodes) {
       if (node is XmlText) {
-        final text =
-            node.text.trim().replaceAll(_whitespaceOrLineTerminators, ' ');
+        final text = node.text.trim().replaceAll(_whitespaceOrLineTerminators, ' ');
         if (text.isNotEmpty) {
           if (result.isNotEmpty && result.last is XmlText) {
-            result.last =
-                XmlText(result.last.text + XmlToken.whitespace + text);
+            result.last = XmlTextSyntheticImpl(result.last.text + XmlToken.whitespace + text);
           } else if (node.text != text) {
-            result.add(XmlText(text));
+            result.add(XmlTextSyntheticImpl(text));
           } else {
             result.add(node);
           }

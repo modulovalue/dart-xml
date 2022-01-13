@@ -1,22 +1,13 @@
 import 'dart:collection';
 
 import 'entities/entity_mapping.dart';
-import 'nodes/attribute.dart';
-import 'nodes/cdata.dart';
-import 'nodes/comment.dart';
-import 'nodes/data.dart';
-import 'nodes/declaration.dart';
-import 'nodes/doctype.dart';
-import 'nodes/document.dart';
-import 'nodes/document_fragment.dart';
-import 'nodes/element.dart';
-import 'nodes/node.dart';
-import 'nodes/processing.dart';
-import 'nodes/text.dart';
+import 'nodes/interface.dart';
+import 'nodes/parse.dart';
+import 'nodes/synthetic_impl.dart';
 import 'utils/attribute_type.dart';
 import 'utils/exceptions.dart';
-import 'utils/name.dart';
 import 'utils/namespace.dart' as ns;
+import 'visitors/node_type.dart';
 
 /// A builder to create XML trees with code.
 class XmlBuilder {
@@ -57,7 +48,7 @@ class XmlBuilder {
         return;
       }
     }
-    children.add(XmlText(text.toString()));
+    children.add(XmlTextSyntheticImpl(text.toString()));
   }
 
   /// Adds a [XmlCDATA] node with the provided [text].
@@ -68,7 +59,7 @@ class XmlBuilder {
   ///     builder.cdata('Hello World');
   ///
   void cdata(Object text) {
-    _stack.last.children.add(XmlCDATA(text.toString()));
+    _stack.last.children.add(XmlCDATASyntheticImpl(text.toString()));
   }
 
   /// Adds a [XmlDeclaration] node.
@@ -78,11 +69,8 @@ class XmlBuilder {
   ///
   ///      builder.declaration(encoding: 'UTF-8');
   ///
-  void declaration(
-      {String version = '1.0',
-      String? encoding,
-      Map<String, String> attributes = const {}}) {
-    final declaration = XmlDeclaration()
+  void declaration({String version = '1.0', String? encoding, Map<String, String> attributes = const {}}) {
+    final declaration = XmlDeclarationSyntheticImpl()
       ..version = version
       ..encoding = encoding;
     attributes.forEach(declaration.setAttribute);
@@ -97,7 +85,7 @@ class XmlBuilder {
   ///     builder.doctype('note SYSTEM "Note.dtd"');
   ///
   void doctype(Object text) {
-    _stack.last.children.add(XmlDoctype(text.toString()));
+    _stack.last.children.add(XmlDoctypeSyntheticImpl(text.toString()));
   }
 
   /// Adds a [XmlProcessing] node with the provided [target] and [text].
@@ -108,7 +96,7 @@ class XmlBuilder {
   ///     builder.processing('xml-stylesheet', 'href="/style.css"');
   ///
   void processing(String target, Object text) {
-    _stack.last.children.add(XmlProcessing(target, text.toString()));
+    _stack.last.children.add(XmlProcessingSyntheticImpl(target, text.toString()));
   }
 
   /// Adds a [XmlComment] node with the provided [text].
@@ -119,7 +107,7 @@ class XmlBuilder {
   ///     builder.comment('Hello World');
   ///
   void comment(Object text) {
-    _stack.last.children.add(XmlComment(text.toString()));
+    _stack.last.children.add(XmlCommentSyntheticImpl(text.toString()));
   }
 
   /// Adds a [XmlElement] node with the provided tag [name].
@@ -172,8 +160,7 @@ class XmlBuilder {
       element.namespaces.forEach((uri, meta) {
         if (!meta.used) {
           final name = meta.name;
-          final attribute = element.attributes
-              .firstWhere((attribute) => attribute.name == name);
+          final attribute = element.attributes.firstWhere((attribute) => attribute.name == name);
           element.attributes.remove(attribute);
         }
       });
@@ -194,10 +181,9 @@ class XmlBuilder {
   ///        builder.attribute('lang', 'en');
   ///     });
   ///
-  void attribute(String name, Object value,
-      {String? namespace, XmlAttributeType? attributeType}) {
-    final attribute = XmlAttribute(_buildName(name, namespace),
-        value.toString(), attributeType ?? XmlAttributeType.DOUBLE_QUOTE);
+  void attribute(String name, Object value, {String? namespace, XmlAttributeType? attributeType}) {
+    final attribute = XmlAttributeSyntheticImpl(
+        _buildName(name, namespace), value.toString(), attributeType ?? XmlAttributeType.DOUBLE_QUOTE);
     _stack.last.attributes.add(attribute);
   }
 
@@ -213,8 +199,7 @@ class XmlBuilder {
   ///     });
   ///
   void xml(String input, {XmlEntityMapping? entityMapping}) {
-    final fragment =
-        XmlDocumentFragment.parse(input, entityMapping: entityMapping);
+    final fragment = parseXmlDocumentFragment(input, entityMapping: entityMapping);
     _stack.last.children.add(fragment);
   }
 
@@ -226,19 +211,16 @@ class XmlBuilder {
       throw ArgumentError('The "$prefix" prefix cannot be bound.');
     }
     if (optimizeNamespaces &&
-        _stack.any((builder) =>
-            builder.namespaces.containsKey(uri) &&
-            builder.namespaces[uri]!.prefix == prefix)) {
+        _stack.any(
+            (builder) => builder.namespaces.containsKey(uri) && builder.namespaces[uri]!.prefix == prefix)) {
       // Namespace prefix already correctly specified in an ancestor.
       return;
     }
     if (_stack.last.namespaces.values.any((meta) => meta.prefix == prefix)) {
-      throw ArgumentError(
-          'The "$prefix" prefix conflicts with existing binding.');
+      throw ArgumentError('The "$prefix" prefix conflicts with existing binding.');
     }
     final meta = NamespaceData(prefix, false);
-    _stack.last.attributes
-        .add(XmlAttribute(meta.name, uri, XmlAttributeType.DOUBLE_QUOTE));
+    _stack.last.attributes.add(XmlAttributeSyntheticImpl(meta.name, uri, XmlAttributeType.DOUBLE_QUOTE));
     _stack.last.namespaces[uri] = meta;
   }
 
@@ -253,8 +235,7 @@ class XmlBuilder {
 
   /// Builds and returns the resulting [XmlDocumentFragment]; resets the builder
   /// to its initial empty state.
-  XmlDocumentFragment buildFragment() =>
-      _build((builder) => builder.buildFragment());
+  XmlDocumentFragment buildFragment() => _build((builder) => builder.buildFragment());
 
   // Internal method to build the final result and reset the builder.
   T _build<T extends XmlNode>(T Function(NodeBuilder builder) builder) {
@@ -281,16 +262,15 @@ class XmlBuilder {
     if (uri != null && uri.isNotEmpty) {
       final meta = _lookup(uri);
       meta.used = true;
-      return XmlName(name, meta.prefix);
+      return createXmlName(name, meta.prefix);
     } else {
-      return XmlName.fromString(name);
+      return createXmlNameFromString(name);
     }
   }
 
   // Internal method to lookup an namespace prefix.
   NamespaceData _lookup(String uri) {
-    final builder = _stack.lastWhere(
-        (builder) => builder.namespaces.containsKey(uri),
+    final builder = _stack.lastWhere((builder) => builder.namespaces.containsKey(uri),
         orElse: () => throw ArgumentError('Undefined namespace: $uri'));
     return builder.namespaces[uri]!;
   }
@@ -315,7 +295,7 @@ class XmlBuilder {
         // Document fragments must be copied and unwrapped.
         value.children.map((element) => element.copy()).forEach(_insert);
       } else {
-        throw ArgumentError('Unable to add element of type ${value.nodeType}');
+        throw ArgumentError('Unable to add element of type ${value.accept(const XmlVisitorNodeType())}');
       }
     } else {
       text(value.toString());
@@ -329,9 +309,13 @@ class NamespaceData {
   final String? prefix;
   bool used;
 
-  XmlName get name => prefix == null || prefix!.isEmpty
-      ? XmlName(ns.xmlns)
-      : XmlName(prefix!, ns.xmlns);
+  XmlName get name {
+    if (prefix == null || prefix!.isEmpty) {
+      return createXmlName(ns.xmlns);
+    } else {
+      return createXmlName(prefix!, ns.xmlns);
+    }
+  }
 
   static final NamespaceData xmlData = NamespaceData(ns.xml, true);
 }
@@ -347,10 +331,9 @@ class NodeBuilder {
 
   late final XmlName name;
 
-  XmlElement buildElement() =>
-      XmlElement(name, attributes, children, isSelfClosing);
+  XmlElement buildElement() => XmlElementSyntheticImpl(name, attributes, children, isSelfClosing);
 
-  XmlDocument buildDocument() => XmlDocument(children);
+  XmlDocument buildDocument() => XmlDocumentSyntheticImpl(children);
 
-  XmlDocumentFragment buildFragment() => XmlDocumentFragment(children);
+  XmlDocumentFragment buildFragment() => XmlDocumentFragmentSyntheticImpl(children);
 }

@@ -1,19 +1,14 @@
-import '../nodes/document.dart';
-import '../nodes/document_fragment.dart';
-import '../nodes/element.dart';
-import '../nodes/node.dart';
-import '../nodes/text.dart';
-import '../utils/node_type.dart';
-import 'visitor.dart';
+import '../nodes/interface.dart';
+import 'node_type.dart';
 
 extension XmlNormalizerExtension on XmlNode {
   /// Puts all child nodes into a "normalized" form, that is no text nodes in
   /// the sub-tree are empty and there are no adjacent text nodes.
-  void normalize() => const XmlNormalizer().visit(this);
+  void normalize() => accept(const XmlNormalizer());
 }
 
 /// Normalizes a node tree in-place.
-class XmlNormalizer with XmlVisitor {
+class XmlNormalizer implements XmlVisitor<void> {
   const XmlNormalizer();
 
   @Deprecated('Use `const XmlNormalizer()`.')
@@ -23,8 +18,7 @@ class XmlNormalizer with XmlVisitor {
   void visitDocument(XmlDocument node) => _normalize(node.children);
 
   @override
-  void visitDocumentFragment(XmlDocumentFragment node) =>
-      _normalize(node.children);
+  void visitDocumentFragment(XmlDocumentFragment node) => _normalize(node.children);
 
   @override
   void visitElement(XmlElement node) => _normalize(node.children);
@@ -32,13 +26,15 @@ class XmlNormalizer with XmlVisitor {
   void _normalize(List<XmlNode> children) {
     _removeEmpty(children);
     _mergeAdjacent(children);
-    children.forEach(visit);
+    for (final a in children) {
+      a.accept(this);
+    }
   }
 
   void _removeEmpty(List<XmlNode> children) {
     for (var i = 0; i < children.length;) {
       final node = children[i];
-      if (node.nodeType == XmlNodeType.TEXT && node.text.isEmpty) {
+      if (node.accept(const XmlVisitorNodeType()) == XmlNodeType.TEXT && node.text.isEmpty) {
         children.removeAt(i);
       } else {
         i++;
@@ -64,4 +60,28 @@ class XmlNormalizer with XmlVisitor {
       }
     }
   }
+
+  @override
+  void visitAttribute(XmlAttribute node) {}
+
+  @override
+  void visitCDATA(XmlCDATA node) {}
+
+  @override
+  void visitComment(XmlComment node) {}
+
+  @override
+  void visitDeclaration(XmlDeclaration node) {}
+
+  @override
+  void visitDoctype(XmlDoctype node) {}
+
+  @override
+  void visitName(XmlName name) {}
+
+  @override
+  void visitProcessing(XmlProcessing node) {}
+
+  @override
+  void visitText(XmlText node) {}
 }
