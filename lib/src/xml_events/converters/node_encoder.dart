@@ -19,7 +19,7 @@ class XmlNodeEncoder extends XmlListConverter<XmlNode, XmlEvent> {
       _XmlNodeEncoderSink(sink);
 }
 
-class _XmlNodeEncoderSink extends ChunkedConversionSink<List<XmlNode>> with XmlVisitor {
+class _XmlNodeEncoderSink extends ChunkedConversionSink<List<XmlNode>> implements XmlVisitor<void> {
   _XmlNodeEncoderSink(this.sink);
 
   final Sink<List<XmlEvent>> sink;
@@ -40,7 +40,7 @@ class _XmlNodeEncoderSink extends ChunkedConversionSink<List<XmlNode>> with XmlV
     sink.add([XmlStartElementEvent(node.name.qualified, convertAttributes(node.attributes), isSelfClosing)]);
     if (!isSelfClosing) {
       for (final a in node.children) {
-        a.accept(this);
+        a.accept<void>(this);
       }
       sink.add([XmlEndElementEvent(node.name.qualified)]);
     }

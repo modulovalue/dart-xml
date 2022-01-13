@@ -21,6 +21,7 @@ Stream<String> splitString(String input, int Function() splitter) async* {
   while (input.isNotEmpty) {
     final size = min(splitter(), input.length);
     yield input.substring(0, size);
+    // ignore: parameter_assignments
     input = input.substring(size);
   }
 }
@@ -29,6 +30,7 @@ Stream<List<T>> splitList<T>(List<T> input, int Function() splitter) async* {
   while (input.isNotEmpty) {
     final size = min(splitter(), input.length);
     yield input.sublist(0, size);
+    // ignore: parameter_assignments
     input = input.sublist(size);
   }
 }
@@ -570,7 +572,7 @@ void main() {
       final stream = Stream.fromIterable(input).withParentEvents().flatten();
       expect(
           stream,
-          emitsInOrder([
+          emitsInOrder(<dynamic>[
             input[0][0],
             emitsError(isXmlTagException.having(
               (error) => error.message,
@@ -586,7 +588,7 @@ void main() {
       final stream = Stream.fromIterable(input).withParentEvents().flatten();
       expect(
           stream,
-          emitsInOrder([
+          emitsInOrder(<dynamic>[
             input[0][0],
             emitsError(isXmlTagException.having(
               (error) => error.message,
@@ -719,7 +721,7 @@ void main() {
       });
       expect(
           genres,
-          containsAll([
+          containsAll(<String>[
             'Computer',
             'Fantasy',
             'Romance',

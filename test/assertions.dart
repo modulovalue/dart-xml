@@ -191,7 +191,7 @@ void assertNamedInvariant(XmlHasName named) {
   if (named.name.prefix != null) {
     expect(named.name.qualified, startsWith(named.name.prefix!));
   }
-  expect(named.name.namespaceUri, anyOf(isNull, (node) => node is String && node.isNotEmpty));
+  expect(named.name.namespaceUri, anyOf(isNull, (dynamic node) => node is String && node.isNotEmpty));
   expect(named.name.qualified.hashCode, named.name.hashCode);
   expect(named.name.qualified, named.name.toString());
 }
@@ -240,7 +240,7 @@ void assertChildrenInvariants(XmlNode xml) {
 
 void assertTextInvariants(XmlNode xml) {
   for (final node in [xml, ...xml.descendants]) {
-    expect(node.text, (text) => text is String, reason: 'All nodes are supposed to return text strings.');
+    expect(node.text, (dynamic text) => text is String, reason: 'All nodes are supposed to return text strings.');
     if (node is XmlText) {
       expect(node.text, isNotEmpty, reason: 'Text nodes cannot be empty.');
     }
@@ -330,7 +330,7 @@ class DefaultVisitor implements XmlVisitor<Null> {
 }
 
 void assertVisitorInvariants(XmlNode xml) {
-  final visitor = DefaultVisitor();
+  const visitor = DefaultVisitor();
   for (final node in [xml, ...xml.descendants]) {
     expect(node.accept(visitor), isNull);
     if (node is XmlHasName) {

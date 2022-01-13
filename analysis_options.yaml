@@ -1,4 +1,4 @@
-include: package:lints/recommended.yaml
+include: package:extra_pedantic/analysis_options.yaml
 linter:
   rules:
     - avoid_print

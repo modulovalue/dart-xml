@@ -31,9 +31,8 @@ void printUsage() {
 void main(List<String> arguments) {
   final files = <File>[];
   final results = argumentParser.parse(arguments);
-  final position = results['position'];
-  final limit = int.parse(results['limit']);
-
+  final position = results['position'] as String;
+  final limit = int.parse(results['limit'] as String);
   for (final argument in results.rest) {
     final file = File(argument);
     if (file.existsSync()) {
@@ -53,7 +52,7 @@ void main(List<String> arguments) {
       stdout.writeln('Parse error in $file: $result.message');
       exit(3);
     }
-    final XmlDocument document = result.value;
+    final XmlDocument document = result.value as XmlDocument;
     for (final node in document.descendants) {
       final token = tokens[node];
       if (token != null) {
@@ -66,7 +65,7 @@ void main(List<String> arguments) {
   }
 }
 
-String outputPosition(String position, Token token) {
+String outputPosition(String position, Token<dynamic> token) {
   switch (position) {
     case 'start':
       return '${token.start}';
@@ -83,7 +82,7 @@ String outputPosition(String position, Token token) {
   }
 }
 
-String outputString(int limit, Token token) {
+String outputString(int limit, Token<dynamic> token) {
   final input = token.input.trim();
   final index = input.indexOf('\n');
   final length = min(limit, index < 0 ? input.length : index);
@@ -93,33 +92,33 @@ String outputString(int limit, Token token) {
 
 // Custom parser that produces a mapping of nodes to tokens as a side-effect.
 
-final Map<XmlNode, Token> tokens = {};
+final Map<XmlNode, Token<dynamic>> tokens = {};
 
-final Parser parser = PositionParserDefinition(defaultEntityMapping).build();
+final Parser parser = PositionParserDefinition(defaultEntityMapping).build<dynamic>();
 
 class PositionParserDefinition extends XmlParserDefinition {
   PositionParserDefinition(XmlEntityMapping entityMapping)
       : super(entityMapping);
 
   @override
-  Parser comment() => collectPosition(super.comment());
+  Parser<XmlComment> comment() => collectPosition(super.comment().cast());
 
   @override
-  Parser cdata() => collectPosition(super.cdata());
+  Parser<XmlCDATA> cdata() => collectPosition(super.cdata().cast());
 
   @override
-  Parser doctype() => collectPosition(super.doctype());
+  Parser<XmlDoctype> doctype() => collectPosition(super.doctype().cast());
 
   @override
-  Parser document() => collectPosition(super.document());
+  Parser<XmlDocument> document() => collectPosition(super.document().cast());
 
   @override
-  Parser element() => collectPosition(super.element());
+  Parser<XmlElement> element() => collectPosition(super.element().cast());
 
   @override
-  Parser processing() => collectPosition(super.processing());
+  Parser<XmlProcessing> processing() => collectPosition(super.processing().cast());
 
-  Parser<XmlNode> collectPosition(Parser parser) => parser.token().map((token) {
+  Parser<T> collectPosition<T extends XmlNode>(Parser<T> parser) => parser.token().map((token) {
         tokens[token.value] = token;
         return token.value;
       });

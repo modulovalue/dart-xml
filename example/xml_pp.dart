@@ -63,11 +63,10 @@ void printUsage() {
 void main(List<String> arguments) {
   final files = <File>[];
   final results = argumentParser.parse(arguments);
-  final color = results['color'];
-  final indent = results['indent'];
-  final newLine = results['newline'];
-  final pretty = results['pretty'];
-
+  final color = results['color'] as bool;
+  final indent = results['indent'] as String?;
+  final newLine = results['newline'] as String?;
+  final pretty = results['pretty'] as bool;
   for (final argument in results.rest) {
     final file = File(argument);
     if (file.existsSync()) {
@@ -80,7 +79,6 @@ void main(List<String> arguments) {
   if (files.isEmpty) {
     printUsage();
   }
-
   // Select the appropriate printing visitor. For simpler use-cases one would
   // just call `document.toXmlString(pretty: true, indent: '  ')`.
   final visitor = pretty

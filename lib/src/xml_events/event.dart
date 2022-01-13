@@ -2,24 +2,24 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 import '../../xml_events.dart';
+import '../xml/nodes/interface.dart';
 import '../xml/utils/namespace.dart';
 import '../xml/utils/token.dart';
 import '../xml/visitors/node_type.dart';
-import 'range.dart';
 
-// TODO interface + base plus mixin?
 /// Event of an XML CDATA node.
 class XmlCDATAEvent extends XmlEvent {
   XmlCDATAEvent(this.text, [this.sourceRange]);
 
   final String text;
-  final XmlEventSourceRange? sourceRange;
+  @override
+  final XmlSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.CDATA;
 
   @override
-  void accept(XmlEventVisitor visitor) => visitor.visitCDATAEvent(this);
+  T accept<T>(XmlEventVisitor<T> visitor) => visitor.visitCDATAEvent(this);
 
   @override
   int get hashCode => nodeType.hashCode ^ text.hashCode;
@@ -33,13 +33,14 @@ class XmlCommentEvent extends XmlEvent {
   XmlCommentEvent(this.text, [this.sourceRange]);
 
   final String text;
-  final XmlEventSourceRange? sourceRange;
+  @override
+  final XmlSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.COMMENT;
 
   @override
-  void accept(XmlEventVisitor visitor) => visitor.visitCommentEvent(this);
+  T accept<T>(XmlEventVisitor<T> visitor) => visitor.visitCommentEvent(this);
 
   @override
   int get hashCode => nodeType.hashCode ^ text.hashCode;
@@ -53,20 +54,21 @@ class XmlDeclarationEvent extends XmlEvent {
   XmlDeclarationEvent(this.attributes, [this.sourceRange]);
 
   final List<XmlEventAttribute> attributes;
-  final XmlEventSourceRange? sourceRange;
+  @override
+  final XmlSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.DECLARATION;
 
   @override
-  void accept(XmlEventVisitor visitor) => visitor.visitDeclarationEvent(this);
+  T accept<T>(XmlEventVisitor<T> visitor) => visitor.visitDeclarationEvent(this);
 
   @override
-  int get hashCode => nodeType.hashCode ^ const ListEquality().hash(attributes);
+  int get hashCode => nodeType.hashCode ^ const ListEquality<dynamic>().hash(attributes);
 
   @override
   bool operator ==(Object other) =>
-      other is XmlDeclarationEvent && const ListEquality().equals(other.attributes, attributes);
+      other is XmlDeclarationEvent && const ListEquality<dynamic>().equals(other.attributes, attributes);
 }
 
 /// Event of an XML doctype node.
@@ -74,13 +76,14 @@ class XmlDoctypeEvent extends XmlEvent {
   XmlDoctypeEvent(this.text, [this.sourceRange]);
 
   final String text;
-  final XmlEventSourceRange? sourceRange;
+  @override
+  final XmlSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.DOCUMENT_TYPE;
 
   @override
-  void accept(XmlEventVisitor visitor) => visitor.visitDoctypeEvent(this);
+  T accept<T>(XmlEventVisitor<T> visitor) =>  visitor.visitDoctypeEvent(this);
 
   @override
   int get hashCode => nodeType.hashCode ^ text.hashCode;
@@ -95,13 +98,14 @@ class XmlEndElementEvent extends XmlEvent with XmlNamed {
 
   @override
   final String name;
-  final XmlEventSourceRange? sourceRange;
+  @override
+  final XmlSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.ELEMENT;
 
   @override
-  void accept(XmlEventVisitor visitor) => visitor.visitEndElementEvent(this);
+  T accept<T>(XmlEventVisitor<T> visitor) => visitor.visitEndElementEvent(this);
 
   @override
   int get hashCode => nodeType.hashCode ^ name.hashCode;
@@ -118,13 +122,14 @@ class XmlProcessingEvent extends XmlEvent {
 
   final String text;
 
-  final XmlEventSourceRange? sourceRange;
+  @override
+  final XmlSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.PROCESSING;
 
   @override
-  void accept(XmlEventVisitor visitor) => visitor.visitProcessingEvent(this);
+  T accept<T>(XmlEventVisitor<T> visitor) => visitor.visitProcessingEvent(this);
 
   @override
   int get hashCode => nodeType.hashCode ^ text.hashCode ^ target.hashCode;
@@ -145,24 +150,25 @@ class XmlStartElementEvent extends XmlEvent with XmlNamed {
 
   final bool isSelfClosing;
 
-  final XmlEventSourceRange? sourceRange;
+  @override
+  final XmlSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.ELEMENT;
 
   @override
-  void accept(XmlEventVisitor visitor) => visitor.visitStartElementEvent(this);
+  T accept<T>(XmlEventVisitor<T> visitor) => visitor.visitStartElementEvent(this);
 
   @override
   int get hashCode =>
-      nodeType.hashCode ^ name.hashCode ^ isSelfClosing.hashCode ^ const ListEquality().hash(attributes);
+      nodeType.hashCode ^ name.hashCode ^ isSelfClosing.hashCode ^ const ListEquality<dynamic>().hash(attributes);
 
   @override
   bool operator ==(Object other) =>
       other is XmlStartElementEvent &&
       other.name == name &&
       other.isSelfClosing == isSelfClosing &&
-      const ListEquality().equals(other.attributes, attributes);
+      const ListEquality<dynamic>().equals(other.attributes, attributes);
 }
 
 /// Event of an XML text node.
@@ -171,13 +177,14 @@ class XmlTextEvent extends XmlEvent {
 
   final String text;
 
-  final XmlEventSourceRange? sourceRange;
+  @override
+  final XmlSourceRange? sourceRange;
 
   @override
   XmlNodeType get nodeType => XmlNodeType.TEXT;
 
   @override
-  void accept(XmlEventVisitor visitor) => visitor.visitTextEvent(this);
+  T accept<T>(XmlEventVisitor<T> visitor) => visitor.visitTextEvent(this);
 
   @override
   int get hashCode => nodeType.hashCode ^ text.hashCode;
@@ -260,7 +267,7 @@ class XmlEventAttribute with XmlNamed, XmlParented {
 
   final XmlAttributeType attributeType;
 
-  final XmlEventSourceRange? sourceRange;
+  final XmlSourceRange? sourceRange;
 
   @override
   int get hashCode => name.hashCode ^ value.hashCode;
@@ -281,10 +288,12 @@ abstract class XmlEvent with XmlParented {
   XmlNodeType get nodeType;
 
   /// Dispatch to the [visitor] based on event type.
-  void accept(XmlEventVisitor visitor);
+  T accept<T>(XmlEventVisitor<T> visitor);
 
   @override
   String toString() => XmlEventEncoder().convert([this]);
+
+  XmlSourceRange? get sourceRange;
 }
 
 /// Basic visitor over [XmlEvent] nodes.
@@ -310,6 +319,6 @@ abstract class XmlEventVisitor<T> {
   /// Visit an [XmlStartElementEvent] event.
   T visitStartElementEvent(XmlStartElementEvent event);
 
-  /// Visit an [XmlCommentText] event.
+  /// Visit an [XmlTextEvent] event.
   T visitTextEvent(XmlTextEvent event);
 }

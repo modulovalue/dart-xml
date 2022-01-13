@@ -1,8 +1,8 @@
 import 'package:meta/meta.dart';
 
+import '../../../xml.dart';
 import '../utils/node_list.dart';
 import '../utils/predicate.dart';
-import '../../../xml.dart';
 
 /// Immutable abstract XML node.
 abstract class XmlNode implements XmlParentable, XmlAttributes, XmlNodeNavigateable {
@@ -472,4 +472,10 @@ abstract class XmlData {
 abstract class XmlHasName {
   /// Return the name of the node.
   XmlName get name;
+}
+
+abstract class XmlSourceRange {
+  int get offset;
+
+  int get end;
 }

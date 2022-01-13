@@ -62,6 +62,7 @@ class XmlCharacterDataParser extends Parser<String> {
       if (value == _stopperCode) {
         break;
       } else {
+        // ignore: parameter_assignments
         position++;
       }
     }

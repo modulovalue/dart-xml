@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 import 'package:xml/src/xml/nodes/parse.dart';
 
-void verifyIterator(Iterable iterable) {
+void verifyIterator<T>(Iterable<T> iterable) {
   final iterator = iterable.iterator;
   while (iterator.moveNext()) {
     expect(iterator.current, isNotNull);
@@ -16,7 +16,7 @@ void main() {
       '</book>';
   final book = parseXmlDocument(bookXml);
   test('ancestors', () {
-    expect(book.ancestors, []);
+    expect(book.ancestors, <dynamic>[]);
     expect(book.children[0].ancestors, [book]);
     expect(book.children[0].children[0].ancestors, [book.children[0], book]);
     expect(book.children[0].children[0].attributes[0].ancestors,
@@ -29,8 +29,8 @@ void main() {
     verifyIterator(book.children[0].children[1].ancestors);
   });
   test('ancestorElements', () {
-    expect(book.ancestorElements, []);
-    expect(book.children[0].ancestorElements, []);
+    expect(book.ancestorElements, <dynamic>[]);
+    expect(book.children[0].ancestorElements, <dynamic>[]);
     expect(book.children[0].children[0].ancestorElements, [book.children[0]]);
     expect(book.children[0].children[0].attributes[0].ancestorElements,
         [book.children[0].children[0], book.children[0]]);
@@ -42,7 +42,7 @@ void main() {
     verifyIterator(book.children[0].children[1].ancestorElements);
   });
   test('preceding', () {
-    expect(book.preceding, []);
+    expect(book.preceding, <dynamic>[]);
     expect(book.children[0].preceding, [book]);
     expect(book.children[0].children[0].preceding, [book, book.children[0]]);
     expect(book.children[0].children[0].attributes[0].preceding,
@@ -71,8 +71,8 @@ void main() {
     verifyIterator(book.children[0].children[1].preceding);
   });
   test('precedingElements', () {
-    expect(book.precedingElements, []);
-    expect(book.children[0].precedingElements, []);
+    expect(book.precedingElements, <dynamic>[]);
+    expect(book.children[0].precedingElements, <dynamic>[]);
     expect(book.children[0].children[0].precedingElements, [book.children[0]]);
     expect(book.children[0].children[0].attributes[0].precedingElements,
         [book.children[0], book.children[0].children[0]]);
@@ -105,10 +105,10 @@ void main() {
       book.children[0].children[0].attributes[1],
       book.children[0].children[0].children[0]
     ]);
-    expect(book.children[0].children[0].attributes[0].descendants, []);
-    expect(book.children[0].children[0].attributes[1].descendants, []);
-    expect(book.children[0].children[0].children[0].descendants, []);
-    expect(book.children[0].children[1].descendants, []);
+    expect(book.children[0].children[0].attributes[0].descendants, <dynamic>[]);
+    expect(book.children[0].children[0].attributes[1].descendants, <dynamic>[]);
+    expect(book.children[0].children[0].children[0].descendants, <dynamic>[]);
+    expect(book.children[0].children[1].descendants, <dynamic>[]);
     verifyIterator(book.descendants);
   });
   test('descendantElements', () {
@@ -119,16 +119,16 @@ void main() {
     ]);
     expect(book.children[0].descendantElements,
         [book.children[0].children[0], book.children[0].children[1]]);
-    expect(book.children[0].children[0].descendantElements, []);
-    expect(book.children[0].children[0].attributes[0].descendantElements, []);
-    expect(book.children[0].children[0].attributes[1].descendantElements, []);
-    expect(book.children[0].children[0].children[0].descendantElements, []);
-    expect(book.children[0].children[1].descendantElements, []);
+    expect(book.children[0].children[0].descendantElements, <dynamic>[]);
+    expect(book.children[0].children[0].attributes[0].descendantElements, <dynamic>[]);
+    expect(book.children[0].children[0].attributes[1].descendantElements, <dynamic>[]);
+    expect(book.children[0].children[0].children[0].descendantElements, <dynamic>[]);
+    expect(book.children[0].children[1].descendantElements, <dynamic>[]);
     verifyIterator(book.descendantElements);
   });
   test('following', () {
-    expect(book.following, []);
-    expect(book.children[0].following, []);
+    expect(book.following, <dynamic>[]);
+    expect(book.children[0].following, <dynamic>[]);
     expect(
         book.children[0].children[0].following, [book.children[0].children[1]]);
     expect(book.children[0].children[0].attributes[0].following, [
@@ -142,12 +142,12 @@ void main() {
     ]);
     expect(book.children[0].children[0].children[0].following,
         [book.children[0].children[1]]);
-    expect(book.children[0].children[1].following, []);
+    expect(book.children[0].children[1].following, <dynamic>[]);
     verifyIterator(book.following);
   });
   test('followingElements', () {
-    expect(book.followingElements, []);
-    expect(book.children[0].followingElements, []);
+    expect(book.followingElements, <dynamic>[]);
+    expect(book.children[0].followingElements, <dynamic>[]);
     expect(book.children[0].children[0].followingElements,
         [book.children[0].children[1]]);
     expect(book.children[0].children[0].attributes[0].followingElements,
@@ -156,7 +156,7 @@ void main() {
         [book.children[0].children[1]]);
     expect(book.children[0].children[0].children[0].followingElements,
         [book.children[0].children[1]]);
-    expect(book.children[0].children[1].followingElements, []);
+    expect(book.children[0].children[1].followingElements, <dynamic>[]);
     verifyIterator(book.followingElements);
   });
   test('nodes', () {
@@ -168,10 +168,10 @@ void main() {
       book.children[0].children[0].attributes[1],
       book.children[0].children[0].children[0]
     ]);
-    expect(book.children[0].children[0].attributes[0].nodes, []);
-    expect(book.children[0].children[0].attributes[1].nodes, []);
-    expect(book.children[0].children[0].children[0].nodes, []);
-    expect(book.children[0].children[1].nodes, []);
+    expect(book.children[0].children[0].attributes[0].nodes, <dynamic>[]);
+    expect(book.children[0].children[0].attributes[1].nodes, <dynamic>[]);
+    expect(book.children[0].children[0].children[0].nodes, <dynamic>[]);
+    expect(book.children[0].children[1].nodes, <dynamic>[]);
     verifyIterator(book.nodes);
   });
 }

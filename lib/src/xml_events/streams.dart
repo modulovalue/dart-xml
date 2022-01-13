@@ -18,7 +18,7 @@ extension XmlForEachEventExtension on Stream<XmlEvent> {
   ///
   /// Completes the returned [Future] when all events of this stream have been
   /// processed.
-  Future forEachEvent({
+  Future<void> forEachEvent({
     EventHandler<XmlCDATAEvent>? onCDATA,
     EventHandler<XmlCommentEvent>? onComment,
     EventHandler<XmlDeclarationEvent>? onDeclaration,
@@ -45,7 +45,7 @@ extension XmlForEachEventListExtension on Stream<List<XmlEvent>> {
   ///
   /// Completes the returned [Future] when all events of this stream have been
   /// processed.
-  Future forEachEvent({
+  Future<void> forEachEvent({
     EventHandler<XmlCDATAEvent>? onCDATA,
     EventHandler<XmlCommentEvent>? onComment,
     EventHandler<XmlDeclarationEvent>? onDeclaration,

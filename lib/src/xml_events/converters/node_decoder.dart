@@ -1,8 +1,8 @@
 import 'dart:convert' show ChunkedConversionSink;
 
-import '../../xml/nodes/synthetic_impl.dart';
 import '../../xml/nodes/interface.dart';
 import '../../xml/nodes/parse.dart';
+import '../../xml/nodes/synthetic_impl.dart';
 import '../../xml/utils/exceptions.dart';
 import '../event.dart';
 import '../utils/list_converter.dart';

@@ -9,10 +9,10 @@ import 'parser.dart';
 class XmlEventIterator extends Iterator<XmlEvent> {
   XmlEventIterator(String input, XmlEntityMapping entityMapping)
       : _eventParser = eventParserCache[entityMapping],
-        _context = Success(input, 0, null);
+        _context = Success<dynamic>(input, 0, null);
 
   final Parser _eventParser;
-  Result? _context;
+  Result<dynamic>? _context;
   late XmlEvent _current;
 
   @override
@@ -25,11 +25,11 @@ class XmlEventIterator extends Iterator<XmlEvent> {
       final result = _eventParser.parseOn(context);
       if (result.isSuccess) {
         _context = result;
-        _current = result.value;
+        _current = result.value as XmlEvent;
         return true;
       } else if (context.position < context.buffer.length) {
         // In case of an error, skip one character and throw an exception.
-        _context = context.failure(result.message, context.position + 1);
+        _context = context.failure<dynamic>(result.message, context.position + 1);
         final lineAndColumn =
             Token.lineAndColumnOf(result.buffer, result.position);
         throw XmlParserException(result.message,

@@ -10,11 +10,9 @@ export 'src/xml/entities/default_mapping.dart' show defaultEntityMapping, XmlDef
 export 'src/xml/entities/entity_mapping.dart' show XmlEntityMapping;
 export 'src/xml/entities/null_mapping.dart' show XmlNullEntityMapping;
 export 'src/xml/navigation/navigation.dart';
-export 'src/xml/nodes/synthetic_impl.dart';
 export 'src/xml/nodes/interface.dart';
-export 'src/xml/parser.dart' show XmlGrammarDefinition;
-export 'src/xml/parser.dart' show XmlParserDefinition;
-export 'src/xml/parser.dart' show XmlProductionDefinition;
+export 'src/xml/nodes/synthetic_impl.dart';
+export 'src/xml/parser.dart';
 export 'src/xml/utils/attribute_type.dart' show XmlAttributeType;
 export 'src/xml/utils/exceptions.dart'
     show XmlException, XmlParserException, XmlNodeTypeException, XmlParentException, XmlTagException;

@@ -4,7 +4,7 @@ import '../nodes/interface.dart';
 import '../utils/token.dart';
 
 /// A visitor that writes XML nodes exactly as they were parsed.
-class XmlWriter with XmlVisitor {
+class XmlWriter implements XmlVisitor<void> {
   XmlWriter(this.buffer, {XmlEntityMapping? entityMapping})
       : entityMapping = entityMapping ?? defaultEntityMapping;
 

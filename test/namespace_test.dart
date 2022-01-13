@@ -8,7 +8,7 @@ void main() {
     parseXmlDocument('<html xmlns="http://www.w3.org/1999/xhtml">'
             '  <body lang="en"/>'
             '</html>');
-    final nodes = List.from(document.descendants)..add(document);
+    final nodes = List<dynamic>.from(document.descendants)..add(document);
     for (final node in nodes) {
       if (node is XmlAttribute && node.name.prefix == 'xmlns') {
         break;
@@ -23,7 +23,7 @@ void main() {
         '<xhtml:html xmlns:xhtml="http://www.w3.org/1999/xhtml">'
         '  <xhtml:body xhtml:lang="en"/>'
         '</xhtml:html>');
-    final nodes = List.from(document.descendants)..add(document);
+    final nodes = List<dynamic>.from(document.descendants)..add(document);
     for (final node in nodes) {
       if (node is XmlAttribute && node.name.prefix == 'xmlns') {
         break;

@@ -12,42 +12,38 @@ abstract class XmlDocumentFragmentBase extends XmlNodeBase
 
 abstract class XmlDocumentBase extends XmlNodeBase with XmlDocumentMixin implements XmlDocument {}
 
-abstract class XmlCDDATABase extends XmlNodeBase
-    with XmlAttributes, XmlParentableMixin, XmlCDATAMixin
-    implements XmlCDATA {}
+abstract class XmlCDDATABase extends XmlNodeBase with XmlParentableMixin, XmlCDATAMixin implements XmlCDATA {}
 
 abstract class XmlAttributeBase extends XmlNodeBase
-    with XmlAttributes, XmlParentableMixin, XmlAttributeMixin
+    with XmlParentableMixin, XmlAttributeMixin
     implements XmlAttribute {}
 
 abstract class XmlCommentBase extends XmlNodeBase
-    with XmlAttributes, XmlParentableMixin, XmlCommentMixin
+    with XmlParentableMixin, XmlCommentMixin
     implements XmlComment {}
 
 abstract class XmlDeclarationBase extends XmlNodeBase
-    with XmlAttributes, XmlParentableMixin, XmlAttributesMixin, XmlDeclarationMixin
+    with XmlParentableMixin, XmlAttributesMixin, XmlDeclarationMixin
     implements XmlDeclaration {}
 
 abstract class XmlDoctypeBase extends XmlNodeBase
-    with XmlAttributes, XmlParentableMixin, XmlDoctypeMixin
+    with XmlParentableMixin, XmlDoctypeMixin
     implements XmlDoctype {}
 
 abstract class XmlElementBase extends XmlNodeBase
-    with XmlAttributes, XmlParentableMixin, XmlAttributesMixin, XmlElementMixin
+    with XmlParentableMixin, XmlAttributesMixin, XmlElementMixin
     implements XmlElement {}
 
 abstract class XmlProcessingBase extends XmlNodeBase
-    with XmlAttributes, XmlParentableMixin, XmlProcessingMixin
+    with XmlParentableMixin, XmlProcessingMixin
     implements XmlProcessing {}
 
-abstract class XmlTextBase extends XmlNodeBase
-    with XmlAttributes, XmlParentableMixin, XmlTextMixin
-    implements XmlText {}
+abstract class XmlTextBase extends XmlNodeBase with XmlParentableMixin, XmlTextMixin implements XmlText {}
 
 abstract class XmlPrefixNameBase extends XmlNodeBase
-    with XmlAttributes, XmlParentableMixin, XmlPrefixNameMixin
+    with XmlParentableMixin, XmlPrefixNameMixin
     implements XmlPrefixName {}
 
 abstract class XmlSimpleNameBase extends XmlNodeBase
-    with XmlAttributes, XmlParentableMixin, XmlSimpleNameMixin
+    with XmlParentableMixin, XmlSimpleNameMixin
     implements XmlSimpleName {}

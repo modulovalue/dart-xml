@@ -23,6 +23,7 @@ class XmlEventDecoder extends Converter<String, List<XmlEvent>> {
 
   @override
   List<XmlEvent> convert(String input, [int start = 0, int? end]) {
+    // ignore: parameter_assignments
     end = RangeError.checkValidRange(start, end, input.length);
     return XmlEventIterable(input.substring(start, end), entityMapping).toList(growable: false);
   }
@@ -43,16 +44,17 @@ class _XmlEventDecoderSink extends StringConversionSinkBase {
 
   @override
   void addSlice(String str, int start, int end, bool isLast) {
+    // ignore: parameter_assignments
     end = RangeError.checkValidRange(start, end, str.length);
     if (start == end) {
       return;
     }
     final result = <XmlEvent>[];
-    Result previous = Success(carry + str.substring(start, end), 0, null);
+    Result<dynamic> previous = Success<dynamic>(carry + str.substring(start, end), 0, null);
     for (;;) {
       final current = eventParser.parseOn(previous);
       if (current.isSuccess) {
-        result.add(current.value);
+        result.add(current.value as XmlEvent);
         previous = current;
       } else {
         carry = previous.buffer.substring(previous.position);

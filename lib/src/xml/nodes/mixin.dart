@@ -195,7 +195,7 @@ mixin XmlParentableMixin implements XmlParentable {
 }
 
 /// Mixin for nodes with attributes.
-mixin XmlAttributesMixin implements XmlAttributes {
+mixin XmlAttributesMixin implements XmlAttributes, XmlNode {
   @override
   final XmlNodeList<XmlAttribute> attributes = XmlNodeList<XmlAttribute>();
 
@@ -219,7 +219,7 @@ mixin XmlAttributesMixin implements XmlAttributes {
     final index = attributes.indexWhere(createNameMatcher(name, namespace));
     if (index < 0) {
       if (value != null) {
-        final prefix = namespace == null ? null : lookupNamespacePrefix(this as dynamic, namespace);
+        final prefix = namespace == null ? null : lookupNamespacePrefix(this, namespace);
         attributes.add(XmlAttributeSyntheticImpl(createXmlName(name, prefix), value));
       }
     } else {

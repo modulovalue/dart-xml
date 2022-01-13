@@ -24,13 +24,14 @@ XmlDocument parseXmlDocument(
     final lineAndColumn = Token.lineAndColumnOf(result.buffer, result.position);
     throw XmlParserException(result.message,
         buffer: result.buffer, position: result.position, line: lineAndColumn[0], column: lineAndColumn[1]);
+  } else {
+    return result.value as XmlDocument;
   }
-  return result.value;
 }
 
 /// Internal cache of parsers for a specific entity mapping.
 final XmlCache<XmlEntityMapping, Parser> _documentParserCache =
-    XmlCache((entityMapping) => XmlParserDefinition(entityMapping).build(), 5);
+    XmlCache((entityMapping) => XmlParserDefinition(entityMapping).build<dynamic >(), 5);
 
 /// Return an [XmlDocumentFragment] for the given [input] string, or throws an
 /// [XmlParserException] if the input is invalid.
@@ -49,16 +50,15 @@ XmlDocumentFragment parseXmlDocumentFragment(
     throw XmlParserException(result.message,
         buffer: result.buffer, position: result.position, line: lineAndColumn[0], column: lineAndColumn[1]);
   }
-  return result.value;
+  return result.value as XmlDocumentFragment;
 }
 
 /// Internal cache of parsers for a specific entity mapping.
 final XmlCache<XmlEntityMapping, Parser> _documentFragmentParserCache = XmlCache((entityMapping) {
   final definition = XmlParserDefinition(entityMapping);
-  return definition.build(start: definition.documentFragment).end();
+  return definition.build<dynamic>(start: definition.documentFragment).end();
 }, 5);
 
-// TODO move into a factory file?
 /// Creates a qualified [XmlName] from a `local` name and an optional
 /// `prefix`.
 XmlName createXmlName(String local, [String? prefix]) {

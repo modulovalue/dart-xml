@@ -33,8 +33,8 @@ void printUsage() {
 void main(List<String> arguments) {
   final files = <File>[];
   final results = argumentParser.parse(arguments);
-  final String tag = results['tag'];
-  final String namespace = results['namespace'];
+  final tag = results['tag'] as String;
+  final namespace = results['namespace'] as String;
 
   for (final argument in results.rest) {
     final file = File(argument);
@@ -53,7 +53,7 @@ void main(List<String> arguments) {
     final document = parseXmlDocument(file.readAsStringSync());
     final elements = document.findAllElements(tag, namespace: namespace);
     for (final element in elements) {
-      stdout.writeln(element.toXmlString(pretty: results['pretty']));
+      stdout.writeln(element.toXmlString(pretty: results['pretty'] as bool));
     }
   }
 }
