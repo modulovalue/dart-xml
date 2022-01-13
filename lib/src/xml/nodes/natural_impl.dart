@@ -5,26 +5,48 @@ import 'synthetic_interface.dart';
 
 class XmlDocumentNaturalImpl extends XmlDocumentSyntheticImpl implements XmlNodeNatural {
   XmlDocumentNaturalImpl(
-    this.source, [
-    Iterable<XmlNode> childrenIterable = const [],
-  ]) : super(childrenIterable);
-
+    this.source,
+    this.declaration,
+    Iterable<XmlNode> a,
+    this.doctypeElement,
+    Iterable<XmlNode> b,
+    this.rootElement,
+    Iterable<XmlNode> c,
+  ) : super(
+          [
+            if (declaration != null) declaration,
+            ...a,
+            if (doctypeElement != null) doctypeElement,
+            ...b,
+            rootElement,
+            ...c,
+          ],
+        );
+  @override
+  final XmlDeclarationNaturalImpl? declaration;
+  @override
+  final XmlDoctypeNaturalImpl? doctypeElement;
+  @override
+  final XmlElementNaturalImpl rootElement;
   @override
   final XmlSourceRange source;
 }
 
 class XmlDocumentFragmentNaturalImpl extends XmlDocumentFragmentSyntheticImpl implements XmlNodeNatural {
   XmlDocumentFragmentNaturalImpl(
-    this.source, [
-    Iterable<XmlNode> childrenIterable = const [],
-  ]) : super(childrenIterable);
+    this.source,
+    Iterable<XmlNode> childrenIterable,
+  ) : super(childrenIterable);
 
   @override
   final XmlSourceRange source;
 }
 
 class XmlCDATANaturalImpl extends XmlCDATASyntheticImpl implements XmlNodeNatural {
-  XmlCDATANaturalImpl(this.source, String text) : super(text);
+  XmlCDATANaturalImpl(
+    this.source,
+    String text,
+  ) : super(text);
 
   @override
   final XmlSourceRange source;
@@ -34,9 +56,9 @@ class XmlAttributeNaturalImpl extends XmlAttributeSyntheticImpl implements XmlNo
   XmlAttributeNaturalImpl(
     this.source,
     XmlName name,
-    String value, [
-    XmlAttributeType attributeType = XmlAttributeType.DOUBLE_QUOTE,
-  ]) : super(name, value, attributeType);
+    String value,
+    XmlAttributeType attributeType,
+  ) : super(name, value, attributeType);
 
   @override
   final XmlSourceRange source;
@@ -54,9 +76,10 @@ class XmlCommentNaturalImpl extends XmlCommentSyntheticImpl implements XmlNodeNa
 
 class XmlDeclarationNaturalImpl extends XmlDeclarationSyntheticImpl implements XmlNodeNatural {
   XmlDeclarationNaturalImpl(
-    this.source, [
-    Iterable<XmlAttribute> attributesIterable = const [],
-  ]) : super(attributesIterable);
+    this.source,
+    Iterable<XmlAttributeNaturalImpl> attributesIterable,
+  ) : super(attributesIterable);
+
 
   @override
   final XmlSourceRange source;
@@ -75,11 +98,11 @@ class XmlDoctypeNaturalImpl extends XmlDoctypeSyntheticImpl implements XmlNodeNa
 class XmlElementNaturalImpl extends XmlElementSyntheticImpl implements XmlNodeNatural {
   XmlElementNaturalImpl(
     this.source,
-    XmlName name, [
-    Iterable<XmlAttribute> attributesIterable = const [],
-    Iterable<XmlNode> childrenIterable = const [],
-    bool isSelfClosing = true,
-  ]) : super(name, attributesIterable, childrenIterable, isSelfClosing);
+    XmlName name,
+    Iterable<XmlAttribute> attributesIterable,
+    Iterable<XmlNode> childrenIterable,
+    bool isSelfClosing,
+  ) : super(name, attributesIterable, childrenIterable, isSelfClosing);
 
   @override
   final XmlSourceRange source;

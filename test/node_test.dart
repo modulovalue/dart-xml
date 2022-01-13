@@ -8,8 +8,7 @@ import 'assertions.dart';
 void main() {
   group('element', () {
     test('basic', () {
-      final document = parseXmlDocument(
-          '<ns:data key="value">Am I or are the other crazy?</ns:data>');
+      final document = parseXmlDocument('<ns:data key="value">Am I or are the other crazy?</ns:data>');
       final node = document.rootElement;
       expect(node.name, createXmlNameFromString('ns:data'));
       expect(node.parent, same(document));
@@ -24,8 +23,7 @@ void main() {
       expect(node.accept(const XmlVisitorNodeType()), XmlNodeType.ELEMENT);
       expect(node.accept(const XmlVisitorNodeType()).toString(), 'XmlNodeType.ELEMENT');
       expect(node.isSelfClosing, isTrue);
-      expect(node.toString(),
-          '<ns:data key="value">Am I or are the other crazy?</ns:data>');
+      expect(node.toString(), '<ns:data key="value">Am I or are the other crazy?</ns:data>');
     });
     test('self-closing', () {
       final document = parseXmlDocument('<data/>');
@@ -73,8 +71,7 @@ void main() {
       expect(inner.toString(), '<inner/>');
     });
     test('constructor error', () {
-      final document =
-      parseXmlDocument('<element attr="value1">text</element>');
+      final document = parseXmlDocument('<element attr="value1">text</element>');
       final node = document.rootElement;
       expect(() => XmlElementSyntheticImpl(node.name), throwsA(isXmlParentException));
       expect(() => XmlElementSyntheticImpl(createXmlName('data'), node.attributes),
@@ -121,8 +118,7 @@ void main() {
       expect(node.toString(), '<data attr="new"/>');
     });
     test('update attribute with namespace', () {
-      final document =
-      parseXmlDocument('<data xmlns:ns="uri" ns:attr="old"/>');
+      final document = parseXmlDocument('<data xmlns:ns="uri" ns:attr="old"/>');
       final node = document.rootElement;
       node.setAttribute('attr', 'new', namespace: 'uri');
       expect(node.getAttribute('attr', namespace: 'uri'), 'new');
@@ -146,8 +142,7 @@ void main() {
       expect(node.toString(), '<data/>');
     });
     test('remove attribute with namespace', () {
-      final document =
-      parseXmlDocument('<data xmlns:ns="uri" ns:attr="old"/>');
+      final document = parseXmlDocument('<data xmlns:ns="uri" ns:attr="old"/>');
       final node = document.rootElement;
       node.removeAttribute('attr', namespace: 'uri');
       expect(node.getAttribute('attr', namespace: 'uri'), isNull);
@@ -166,8 +161,7 @@ void main() {
   group('attribute', () {
     group('double quote', () {
       test('basic', () {
-        final document = parseXmlDocument(
-            '<data ns:attr="Am I or are the other crazy?" />');
+        final document = parseXmlDocument('<data ns:attr="Am I or are the other crazy?" />');
         final node = document.rootElement.attributes.single;
         expect(node.name, createXmlNameFromString('ns:attr'));
         expect(node.value, 'Am I or are the other crazy?');
@@ -192,8 +186,7 @@ void main() {
         expect(node.toString(), 'attr=""');
       });
       test('character references', () {
-        final document = parseXmlDocument(
-            '<data ns:attr="&lt;&gt;&amp;&apos;&quot;&#xA;&#xD;&#x9;" />');
+        final document = parseXmlDocument('<data ns:attr="&lt;&gt;&amp;&apos;&quot;&#xA;&#xD;&#x9;" />');
         final node = document.rootElement.attributes.single;
         expect(node.value, '<>&\'"\n\r\t');
         expect(node.toString(), 'ns:attr="&lt;>&amp;\'&quot;&#xA;&#xD;&#x9;"');
@@ -201,8 +194,7 @@ void main() {
     });
     group('single quote', () {
       test('basic', () {
-        final document = parseXmlDocument(
-            '<data ns:attr=\'Am I or are the other crazy?\' />');
+        final document = parseXmlDocument('<data ns:attr=\'Am I or are the other crazy?\' />');
         final node = document.rootElement.attributes.single;
         expect(node.name, createXmlNameFromString('ns:attr'));
         expect(node.value, 'Am I or are the other crazy?');
@@ -227,8 +219,7 @@ void main() {
         expect(node.toString(), "attr=''");
       });
       test('character references)', () {
-        final document = parseXmlDocument(
-            '<data ns:attr=\'&lt;&gt;&amp;&apos;&quot;&#xA;&#xD;&#x9;\' />');
+        final document = parseXmlDocument('<data ns:attr=\'&lt;&gt;&amp;&apos;&quot;&#xA;&#xD;&#x9;\' />');
         final node = document.rootElement.attributes.single;
         expect(node.value, '<>&\'"\n\r\t');
         expect(node.toString(), "ns:attr='&lt;>&amp;&apos;\"&#xA;&#xD;&#x9;'");
@@ -242,8 +233,7 @@ void main() {
   });
   group('text', () {
     test('basic', () {
-      final document =
-      parseXmlDocument('<data>Am I or are the other crazy?</data>');
+      final document = parseXmlDocument('<data>Am I or are the other crazy?</data>');
       final node = document.rootElement.children.single as XmlText;
       expect(node.text, 'Am I or are the other crazy?');
       expect(node.parent, same(document.rootElement));
@@ -258,15 +248,13 @@ void main() {
       expect(node.toString(), 'Am I or are the other crazy?');
     });
     test('character references', () {
-      final document =
-      parseXmlDocument('<data>&lt;&gt;&amp;&apos;&quot;</data>');
+      final document = parseXmlDocument('<data>&lt;&gt;&amp;&apos;&quot;</data>');
       final node = document.rootElement.children.single;
       expect(node.text, '<>&\'"');
       expect(node.toString(), '&lt;>&amp;\'"');
     });
     test('nested', () {
-      final root = parseXmlDocument(
-          '<p>Am <i>I</i> or are the <b>other</b><!-- very --> crazy?</p>');
+      final root = parseXmlDocument('<p>Am <i>I</i> or are the <b>other</b><!-- very --> crazy?</p>');
       expect(root.rootElement.text, 'Am I or are the other crazy?');
     });
   });
@@ -274,8 +262,7 @@ void main() {
     final document = parseXmlDocument('<data>'
         '<![CDATA[Methinks <word> it <word> is like a weasel!]]>'
         '</data>');
-    expect(document.rootElement.text,
-        'Methinks <word> it <word> is like a weasel!');
+    expect(document.rootElement.text, 'Methinks <word> it <word> is like a weasel!');
     final node = document.rootElement.children.single;
     expect(node.text, 'Methinks <word> it <word> is like a weasel!');
     expect(node.parent, same(document.rootElement));
@@ -287,13 +274,11 @@ void main() {
     expect(node.children, isEmpty);
     expect(node.accept(const XmlVisitorNodeType()), XmlNodeType.CDATA);
     expect(node.accept(const XmlVisitorNodeType()).toString(), 'XmlNodeType.CDATA');
-    expect(node.toString(),
-        '<![CDATA[Methinks <word> it <word> is like a weasel!]]>');
+    expect(node.toString(), '<![CDATA[Methinks <word> it <word> is like a weasel!]]>');
   });
   group('declaration', () {
     test('declaration', () {
-      final document =
-      parseXmlDocument('<?xml version="1.0" encoding="UTF-8"?><data/>');
+      final document = parseXmlDocument('<?xml version="1.0" encoding="UTF-8"?><data/>');
       final node = document.declaration!;
       expect(node.version, '1.0');
       expect(node.encoding, 'UTF-8');
@@ -322,8 +307,7 @@ void main() {
       expect(node.toString(), '<?xml other="some"?>');
     });
     test('remove attribute', () {
-      final document =
-      parseXmlDocument('<?xml version="1.0" other="value"?><data/>');
+      final document = parseXmlDocument('<?xml version="1.0" other="value"?><data/>');
       final node = document.declaration!;
       node.removeAttribute('other');
       expect(node.toString(), '<?xml version="1.0"?>');
@@ -365,8 +349,7 @@ void main() {
     });
   });
   test('processing', () {
-    final document =
-    parseXmlDocument('<?xml-stylesheet href="style.css"?><data/>');
+    final document = parseXmlDocument('<?xml-stylesheet href="style.css"?><data/>');
     final node = document.firstChild! as XmlProcessing;
     expect(node.target, 'xml-stylesheet');
     expect(node.text, 'href="style.css"');
@@ -382,8 +365,7 @@ void main() {
     expect(node.toString(), '<?xml-stylesheet href="style.css"?>');
   });
   test('comment', () {
-    final document =
-    parseXmlDocument('<data><!--Am I or are the other crazy?--></data>');
+    final document = parseXmlDocument('<data><!--Am I or are the other crazy?--></data>');
     final node = document.rootElement.children.single;
     expect(node.parent, same(document.rootElement));
     expect(node.parentElement, same(document.rootElement));
@@ -436,28 +418,26 @@ void main() {
           '<!-- before -->\n<element/>\n<!-- after -->');
     });
     test('empty', () {
-      final document = XmlDocumentSyntheticImpl();
+      final document = XmlDocumentSyntheticImpl(const []);
       expect(document.declaration, isNull);
       expect(document.doctypeElement, isNull);
       expect(() => document.rootElement, throwsStateError);
     });
     test('attributes', () {
-      final document = XmlDocumentSyntheticImpl();
+      final document = XmlDocumentSyntheticImpl(const []);
       expect(document.attributes, isEmpty);
       expect(document.getAttribute('attr'), isNull);
       expect(document.getAttributeNode('attr'), isNull);
-      expect(
-          () => document.setAttribute('attr', 'value'), throwsUnsupportedError);
+      expect(() => document.setAttribute('attr', 'value'), throwsUnsupportedError);
       expect(() => document.removeAttribute('attr'), throwsUnsupportedError);
       expect(
-          () => document.attributes
-              .add(XmlAttributeSyntheticImpl(createXmlNameFromString('attr'), 'value')),
-          throwsUnsupportedError);
+        () => document.attributes.add(XmlAttributeSyntheticImpl(createXmlNameFromString('attr'), 'value')),
+        throwsUnsupportedError,
+      );
     });
   });
   test('document type', () {
-    final document =
-    parseXmlDocument('<!DOCTYPE html [<!-- internal subset -->]><data />');
+    final document = parseXmlDocument('<!DOCTYPE html [<!-- internal subset -->]><data />');
     final node = document.doctypeElement!;
     expect(node.parent, same(document));
     expect(node.parentElement, isNull);

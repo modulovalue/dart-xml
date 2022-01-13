@@ -39,10 +39,10 @@ class XmlTreeGrammarDefinition extends GrammarDefinition
 
   @override
   Parser<XmlAttributeNaturalImpl> attribute() => attributeProd().token().map((a) {
-        final dynamic each = a.value;
+        final each = a.value;
         return XmlAttributeNaturalImpl(
           _range(a),
-          (each as List<dynamic>)[0] as XmlName,
+          each[0] as XmlName,
           (each[4] as List<dynamic>)[0] as String,
           (each[4] as List<dynamic>)[1] as XmlAttributeType,
         );
@@ -66,63 +66,79 @@ class XmlTreeGrammarDefinition extends GrammarDefinition
 
   @override
   Parser<XmlCommentNaturalImpl> comment() => commentProd().token().map((a) {
-        final dynamic each = a.value;
-        return XmlCommentNaturalImpl(_range(a), (each as List<dynamic>)[1] as String);
+        final each = a.value;
+        return XmlCommentNaturalImpl(
+          _range(a),
+          each[1] as String,
+        );
       });
 
   @override
   Parser<XmlDeclarationNaturalImpl> declaration() => declarationProd().token().map((a) {
-        final dynamic each = a.value;
+        final each = a.value;
         return XmlDeclarationNaturalImpl(
-            _range(a), ((each as List<dynamic>)[1] as Iterable<dynamic>).cast<XmlAttribute>());
+          _range(a),
+          (each[1] as Iterable<dynamic>).cast<XmlAttributeNaturalImpl>(),
+        );
       });
 
   @override
   Parser<XmlCDATANaturalImpl> cdata() => cdataProd().token().map((a) {
-        final dynamic each = a.value;
+        final each = a.value;
         final source = _range(a);
-        return XmlCDATANaturalImpl(source, (each as List<dynamic>)[1] as String);
+        return XmlCDATANaturalImpl(
+          source,
+          each[1] as String,
+        );
       });
 
   @override
   Parser<XmlDoctypeNaturalImpl> doctype() => doctypeProd().token().map((a) {
-        final dynamic each = a.value;
-        return XmlDoctypeNaturalImpl(_range(a), (each as List<dynamic>)[2] as String);
+        final each = a.value;
+        return XmlDoctypeNaturalImpl(
+          _range(a),
+          each[2] as String,
+        );
       });
 
   Parser<XmlDocumentNaturalImpl> document() => documentProd().token().map((a) {
-        final dynamic each = a.value;
-        final nodes = <XmlNode>[];
-        if ((each as List<dynamic>)[0] != null) {
-          nodes.add(each[0] as XmlDeclaration);
-        }
-        nodes.addAll((each[1] as List<dynamic>).cast<XmlNode>());
-        if (each[2] != null) {
-          nodes.add(each[2] as XmlDoctype);
-        }
-        nodes.addAll((each[3] as List<dynamic>).cast<XmlNode>());
-        nodes.add(each[4] as XmlNode); // document
-        nodes.addAll((each[5] as List<dynamic>).cast<XmlNode>());
+        final each = a.value;
         return XmlDocumentNaturalImpl(
           _range(a),
-          nodes.cast<XmlNode>(),
+          () {
+            final dynamic _decl = each[0];
+            if (_decl == null) {
+              return null;
+            } else {
+              return each[0] as XmlDeclarationNaturalImpl;
+            }
+          }(),
+          (each[1] as List<dynamic>).cast<XmlNode>(),
+          () {
+            final dynamic doctype = each[2];
+            if (doctype == null) {
+              return null;
+            } else {
+              return doctype as XmlDoctypeNaturalImpl;
+            }
+          }(),
+          (each[3] as List<dynamic>).cast<XmlNode>(),
+          each[4] as XmlElementNaturalImpl,
+          (each[5] as List<dynamic>).cast<XmlNode>(),
         );
       });
 
   Parser<XmlDocumentFragmentNaturalImpl> documentFragment() => documentFragmentProd().token().map(
-        (a) {
-          final dynamic nodes = a.value;
-          return XmlDocumentFragmentNaturalImpl(
-            _range(a),
-            (nodes as List<dynamic>).cast<XmlNode>(),
-          );
-        },
+        (a) => XmlDocumentFragmentNaturalImpl(
+          _range(a),
+          a.value.cast<XmlNode>(),
+        ),
       );
 
   @override
   Parser<XmlElementNaturalImpl> element() => elementProd().token().map((a) {
-        final dynamic list = a.value;
-        final name = (list as List<dynamic>)[1] as XmlName;
+        final list = a.value;
+        final name = list[1] as XmlName;
         final attributes = (list[2] as List<dynamic>).cast<XmlNode>();
         if (list[4] == XmlToken.closeEndElement) {
           return XmlElementNaturalImpl(_range(a), name, attributes.cast(), [], true);
@@ -146,46 +162,43 @@ class XmlTreeGrammarDefinition extends GrammarDefinition
 
   @override
   Parser<XmlProcessingNaturalImpl> processing() => processingProd().token().map((a) {
-        final dynamic each = a.value;
-        return XmlProcessingNaturalImpl(_range(a), (each as List<dynamic>)[1] as String, each[2] as String);
+        final each = a.value;
+        return XmlProcessingNaturalImpl(_range(a), each[1] as String, each[2] as String);
       });
 
   @override
-  Parser<XmlNameNatural> qualified() => qualifiedProd().cast<String>().token().map((final a) {
+  Parser<XmlNameNatural> qualified() => qualifiedProd().token().map((final a) {
         final each = a.value;
         return createXmlNameNaturalFromString(_range(a), each);
       });
 
   @override
-  Parser<XmlTextNaturalImpl> characterData() => characterDataProd().cast<String>().token().map((final a) {
+  Parser<XmlTextNaturalImpl> characterData() => characterDataProd().token().map((final a) {
         final each = a.value;
         return XmlTextNaturalImpl(_range(a), each);
       });
 
   @override
-  Parser<XmlTextNaturalImpl> spaceText() => spaceTextProd().cast<String>().token().map((final a) {
+  Parser<XmlTextNaturalImpl> spaceText() => spaceTextProd().token().map((final a) {
         final each = a.value;
         return XmlTextNaturalImpl(_range(a), each);
       });
 }
 
-XmlSourceRange _range(Token<dynamic> t) => XmlSourceRangeImpl(t.start, t.stop);
-
 /// XML parsers that are shared between the XML tree and event based parsers.
 mixin XmlGrammarMixin<
-    ATTRIBUTE,
-    ATTRIBUTEVALUEDOUBLE,
-    ATTRIBUTEVALUESINGLE,
-    COMMENT,
-    CDATA,
-    DECLARATION,
-    DOCTYPE,
-    ELEMENT,
-    PROCESSING,
-    QUALIFIED,
-    CHARACTERDATA,
-    SPACETEXT //
-    > {
+    ATTRIBUTE extends Object,
+    ATTRIBUTEVALUEDOUBLE extends Object,
+    ATTRIBUTEVALUESINGLE extends Object,
+    COMMENT extends Object,
+    CDATA extends Object,
+    DECLARATION extends Object,
+    DOCTYPE extends Object,
+    ELEMENT extends Object,
+    PROCESSING extends Object,
+    QUALIFIED extends Object,
+    CHARACTERDATA extends Object,
+    SPACETEXT extends Object> {
   XmlEntityMapping get entityMapping;
 
   Parser<ATTRIBUTE> attribute();
@@ -212,51 +225,52 @@ mixin XmlGrammarMixin<
 
   Parser<SPACETEXT> spaceText();
 
-  Parser<dynamic> attributeProd() => ref0<dynamic>(qualified)
+  Parser<List<dynamic>> attributeProd() => ref0<dynamic>(qualified)
       .seq(ref0<dynamic>(spaceOptionalProd))
       .seq(XmlToken.equals.toParser())
       .seq(ref0<dynamic>(spaceOptionalProd))
       .seq(ref0<dynamic>(attributeValueProd));
 
-  Parser<dynamic> attributesProd() => ref0<dynamic>(spaceProd).seq(ref0<dynamic>(attribute)).pick(1).star();
+  Parser<List<dynamic>> attributesProd() =>
+      ref0<dynamic>(spaceProd).seq(ref0<dynamic>(attribute)).pick(1).star();
 
   Parser<dynamic> attributeValueProd() =>
       ref0<dynamic>(attributeValueDouble).or(ref0<dynamic>(attributeValueSingle));
 
-  Parser<dynamic> attributeValueDoubleProd() => XmlToken.doubleQuote
+  Parser<List<dynamic>> attributeValueDoubleProd() => XmlToken.doubleQuote
       .toParser()
       .seq(XmlCharacterDataParser(entityMapping, XmlToken.doubleQuote, 0))
       .seq(XmlToken.doubleQuote.toParser());
 
-  Parser<dynamic> attributeValueSingleProd() => XmlToken.singleQuote
+  Parser<List<dynamic>> attributeValueSingleProd() => XmlToken.singleQuote
       .toParser()
       .seq(XmlCharacterDataParser(entityMapping, XmlToken.singleQuote, 0))
       .seq(XmlToken.singleQuote.toParser());
 
-  Parser<dynamic> commentProd() => XmlToken.openComment
+  Parser<List<dynamic>> commentProd() => XmlToken.openComment
       .toParser()
       .seq(any().starLazy(XmlToken.closeComment.toParser()).flatten('Expected comment content'))
       .seq(XmlToken.closeComment.toParser());
 
-  Parser<dynamic> cdataProd() => XmlToken.openCDATA
+  Parser<List<dynamic>> cdataProd() => XmlToken.openCDATA
       .toParser()
       .seq(any().starLazy(XmlToken.closeCDATA.toParser()).flatten('Expected CDATA content'))
       .seq(XmlToken.closeCDATA.toParser());
 
-  Parser<dynamic> contentProd() => ref0<dynamic>(characterData)
+  Parser<List<dynamic>> contentProd() => ref0<dynamic>(characterData)
       .or(ref0<dynamic>(element))
       .or(ref0<dynamic>(processing))
       .or(ref0<dynamic>(comment))
       .or(ref0<dynamic>(cdata))
       .star();
 
-  Parser<dynamic> declarationProd() => XmlToken.openDeclaration
+  Parser<List<dynamic>> declarationProd() => XmlToken.openDeclaration
       .toParser()
       .seq(ref0<dynamic>(attributesProd))
       .seq(ref0<dynamic>(spaceOptionalProd))
       .seq(XmlToken.closeDeclaration.toParser());
 
-  Parser<dynamic> doctypeProd() => XmlToken.openDoctype
+  Parser<List<dynamic>> doctypeProd() => XmlToken.openDoctype
       .toParser()
       .seq(ref0<dynamic>(spaceProd))
       .seq(ref0<dynamic>(nameTokenProd)
@@ -278,20 +292,21 @@ mixin XmlGrammarMixin<
       .or(ref0<dynamic>(processing))
       .or(ref0<dynamic>(doctype));
 
-  Parser<dynamic> documentProd() => ref0<dynamic>(declaration)
+  Parser<List<dynamic>> documentProd() => ref0<DECLARATION>(declaration)
       .optional()
       .seq(ref0<dynamic>(miscProd))
-      .seq(ref0<dynamic>(doctype).optional())
+      .seq(ref0(doctype).optional())
       .seq(ref0<dynamic>(miscProd))
-      .seq(ref0<dynamic>(element))
+      .seq(ref0<ELEMENT>(element))
       .seq(ref0<dynamic>(miscProd));
 
-  Parser<dynamic> documentFragmentProd() => ref0<dynamic>(documentFragmentContentProd)
+  Parser<List<dynamic>> documentFragmentProd() => ref0<dynamic>(documentFragmentContentProd)
       .star()
       .seq(endOfInput('Expected end of input') | ref0<dynamic>(element))
-      .pick(0);
+      .pick(0)
+      .castList<dynamic>();
 
-  Parser<dynamic> elementProd() => XmlToken.openElement
+  Parser<List<dynamic>> elementProd() => XmlToken.openElement
       .toParser()
       .seq(ref0<dynamic>(qualified))
       .seq(ref0<dynamic>(attributesProd))
@@ -304,7 +319,7 @@ mixin XmlGrammarMixin<
           .seq(ref0<dynamic>(spaceOptionalProd))
           .seq(XmlToken.closeElement.toParser())));
 
-  Parser<dynamic> processingProd() => XmlToken.openProcessing
+  Parser<List<dynamic>> processingProd() => XmlToken.openProcessing
       .toParser()
       .seq(ref0<dynamic>(nameTokenProd))
       .seq(ref0<dynamic>(spaceProd)
@@ -321,12 +336,16 @@ mixin XmlGrammarMixin<
 
   Parser<List<String>> spaceProd() => whitespace().plus();
 
-  Parser<dynamic> miscProd() =>
-      ref0<dynamic>(spaceText).or(ref0<dynamic>(comment)).or(ref0<dynamic>(processing)).star();
+  Parser<Object> miscProd() =>
+      ref0(spaceText).or(ref0<COMMENT>(comment)).or(ref0<PROCESSING>(processing)).star();
 
-  Parser<String> characterDataProd() => XmlCharacterDataParser(entityMapping, XmlToken.openElement, 1);
+  Parser<String> characterDataProd() => XmlCharacterDataParser(
+        entityMapping,
+        XmlToken.openElement,
+        1,
+      );
 
-  Parser<dynamic> qualifiedProd() => ref0<dynamic>(nameTokenProd);
+  Parser<String> qualifiedProd() => ref0(nameTokenProd);
 
   Parser<String> nameTokenProd() =>
       ref0<dynamic>(nameStartCharProd).seq(ref0<dynamic>(nameCharProd).star()).flatten('Expected name');
@@ -355,3 +374,5 @@ mixin XmlGrammarMixin<
       '\u0300-\u036f'
       '\u203f-\u2040';
 }
+
+XmlSourceRange _range<T>(Token<T> t) => XmlSourceRangeImpl(t.start, t.stop);

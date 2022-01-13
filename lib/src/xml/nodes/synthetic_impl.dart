@@ -24,9 +24,9 @@ class XmlDocumentFragmentSyntheticImpl extends XmlDocumentFragmentBase {
 }
 
 class XmlDocumentSyntheticImpl extends XmlDocumentBase {
-  XmlDocumentSyntheticImpl([
-    Iterable<XmlNode> childrenIterable = const [],
-  ]) {
+  XmlDocumentSyntheticImpl(
+    Iterable<XmlNode> childrenIterable,
+  ) {
     children.initialize(this, {
       XmlNodeType.CDATA,
       XmlNodeType.COMMENT,

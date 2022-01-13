@@ -13,15 +13,15 @@ class XmlEventGrammarDefinition extends GrammarDefinition
     with
         XmlGrammarMixin<
             XmlEventAttribute,
-            dynamic,
-            dynamic,
+            Object,
+            Object,
             XmlCommentEvent,
             XmlCDATAEvent,
             XmlDeclarationEvent,
             XmlDoctypeEvent,
-            dynamic,
+            Object,
             XmlProcessingEvent,
-            dynamic,
+            Object,
             XmlTextEvent,
             String //
             > {
@@ -31,7 +31,7 @@ class XmlEventGrammarDefinition extends GrammarDefinition
   final XmlEntityMapping entityMapping;
 
   @override
-  Parser start() => ref0<dynamic>(characterData)
+  Parser start() => ref0(characterData)
       .or(ref0<dynamic>(startElement))
       .or(ref0<dynamic>(endElement))
       .or(ref0<dynamic>(comment))
@@ -47,11 +47,14 @@ class XmlEventGrammarDefinition extends GrammarDefinition
       .seq(ref0<dynamic>(spaceOptionalProd))
       .seq(XmlToken.closeElement.toParser().or(XmlToken.closeEndElement.toParser()))
       .token()
-      .map((each) => XmlStartElementEvent(
+      .map(
+        (each) => XmlStartElementEvent(
           each.value[1] as String,
           (each.value[2] as List<dynamic>).cast<XmlEventAttribute>(),
           each.value[4] == XmlToken.closeEndElement,
-          _range(each)));
+          _range(each),
+        ),
+      );
 
   Parser<XmlEndElementEvent> endElement() => XmlToken.openEndElement
       .toParser()
@@ -59,67 +62,93 @@ class XmlEventGrammarDefinition extends GrammarDefinition
       .seq(ref0<dynamic>(spaceOptionalProd))
       .seq(XmlToken.closeElement.toParser())
       .token()
-      .map((each) => XmlEndElementEvent((each.value)[1] as String, _range(each)));
+      .map(
+        (each) => XmlEndElementEvent(
+          (each.value)[1] as String,
+          _range(each),
+        ),
+      );
 
   Parser document() => documentProd();
 
   @override
-  Parser<XmlEventAttribute> attribute() => attributeProd().token().map((each) => XmlEventAttribute(
-      (each.value as List<dynamic>)[0] as String,
-      ((each.value as List<dynamic>)[4] as List<dynamic>)[1] as String,
-      ((each.value as List<dynamic>)[4] as List<dynamic>)[0] == '"'
-          ? XmlAttributeType.DOUBLE_QUOTE
-          : XmlAttributeType.SINGLE_QUOTE,
-      _range(each)));
+  Parser<XmlEventAttribute> attribute() => attributeProd().token().map(
+        (each) => XmlEventAttribute(
+          each.value[0] as String,
+          (each.value[4] as List<dynamic>)[1] as String,
+          (each.value[4] as List<dynamic>)[0] == '"'
+              ? XmlAttributeType.DOUBLE_QUOTE
+              : XmlAttributeType.SINGLE_QUOTE,
+          _range(each),
+        ),
+      );
 
   @override
-  Parser attributeValueDouble() => attributeValueDoubleProd();
+  Parser<Object> attributeValueDouble() => attributeValueDoubleProd();
 
   @override
-  Parser attributeValueSingle() => attributeValueSingleProd();
+  Parser<Object> attributeValueSingle() => attributeValueSingleProd();
 
   @override
-  Parser<XmlCommentEvent> comment() => commentProd()
-      .token()
-      .map((each) => XmlCommentEvent((each.value as List<dynamic>)[1] as String, _range(each)));
+  Parser<XmlCommentEvent> comment() => commentProd().token().map(
+        (each) => XmlCommentEvent(
+          each.value[1] as String,
+          _range(each),
+        ),
+      );
 
   @override
-  Parser<XmlCDATAEvent> cdata() => cdataProd()
-      .token()
-      .map((each) => XmlCDATAEvent((each.value as List<dynamic>)[1] as String, _range(each)));
+  Parser<XmlCDATAEvent> cdata() => cdataProd().token().map(
+        (each) => XmlCDATAEvent(
+          each.value[1] as String,
+          _range(each),
+        ),
+      );
 
   @override
   Parser<XmlDeclarationEvent> declaration() => declarationProd().token().map(
         (each) => XmlDeclarationEvent(
-            ((each.value as List<dynamic>)[1] as List<dynamic>).cast<XmlEventAttribute>(), _range(each)),
+          (each.value[1] as List<dynamic>).cast<XmlEventAttribute>(),
+          _range(each),
+        ),
       );
 
   @override
-  Parser<XmlDoctypeEvent> doctype() => doctypeProd()
-      .token()
-      .map((each) => XmlDoctypeEvent((each.value as List<dynamic>)[2] as String, _range(each)));
+  Parser<XmlDoctypeEvent> doctype() => doctypeProd().token().map(
+        (each) => XmlDoctypeEvent(
+          each.value[2] as String,
+          _range(each),
+        ),
+      );
 
   @override
-  Parser element() => elementProd();
+  Parser<Object> element() => elementProd();
 
   @override
   Parser<XmlProcessingEvent> processing() => processingProd().token().map(
-        (each) => XmlProcessingEvent((each.value as List<dynamic>)[1] as String,
-            (each.value as List<dynamic>)[2] as String, _range(each)),
+        (each) => XmlProcessingEvent(
+          each.value[1] as String,
+          each.value[2] as String,
+          _range(each),
+        ),
       );
 
   @override
-  Parser<dynamic> qualified() => qualifiedProd();
+  Parser<String> qualified() => qualifiedProd();
 
   @override
-  Parser<XmlTextEvent> characterData() =>
-      characterDataProd().token().map((each) => XmlTextEvent(each.value, _range(each)));
+  Parser<XmlTextEvent> characterData() => characterDataProd().token().map(
+        (each) => XmlTextEvent(
+          each.value,
+          _range(each),
+        ),
+      );
 
   @override
   Parser<String> spaceText() => spaceTextProd();
 }
 
-XmlSourceRange _range(Token<dynamic> t) => XmlSourceRangeImpl(t.start, t.stop);
+XmlSourceRange _range<T>(Token<T> t) => XmlSourceRangeImpl(t.start, t.stop);
 
 final XmlCache<XmlEntityMapping, Parser> eventParserCache =
     XmlCache((entityMapping) => XmlEventGrammarDefinition(entityMapping).build<dynamic>(), 5);

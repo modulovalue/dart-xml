@@ -15,7 +15,7 @@ import 'natural_interface.dart';
 ///
 /// Note: It is the responsibility of the caller to provide a standard Dart
 /// [String] using the default UTF-16 encoding.
-XmlDocument parseXmlDocument(
+XmlDocumentNaturalImpl parseXmlDocument(
   String input, {
   XmlEntityMapping? entityMapping,
 }) {
