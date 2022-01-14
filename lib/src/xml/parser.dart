@@ -141,11 +141,23 @@ class XmlTreeGrammarDefinition extends GrammarDefinition
         final name = list[1] as XmlName;
         final attributes = (list[2] as List<dynamic>).cast<XmlNode>();
         if (list[4] == XmlToken.closeEndElement) {
-          return XmlElementNaturalImpl(_range(a), name, attributes.cast(), [], true);
+          return XmlElementNaturalImpl(
+            _range(a),
+            name,
+            attributes.cast(),
+            [],
+            true,
+          );
         } else {
-          if (list[1] == (list[4] as List<dynamic>)[3]) {
-            final children = ((list[4] as List<dynamic>)[1] as List<dynamic>).cast<XmlNode>();
-            return XmlElementNaturalImpl(_range(a), name, attributes.cast(), children, children.isNotEmpty);
+          if (name == (list[4] as List<dynamic>)[3]) {
+            final children = ((list[4] as List<dynamic>)[1] as List<dynamic>).cast<XmlElementChildNatural>();
+            return XmlElementNaturalImpl(
+              _range(a),
+              name,
+              attributes.cast(),
+              children,
+              children.isNotEmpty,
+            );
           } else {
             final token = (list[4] as List<dynamic>)[2] as Token<dynamic>;
             final lineAndColumn = Token.lineAndColumnOf(token.buffer, token.start);

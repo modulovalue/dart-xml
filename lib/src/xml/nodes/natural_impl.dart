@@ -42,11 +42,21 @@ class XmlDocumentFragmentNaturalImpl extends XmlDocumentFragmentSyntheticImpl im
   final XmlSourceRange source;
 }
 
-class XmlCDATANaturalImpl extends XmlCDATASyntheticImpl implements XmlNodeNatural {
+class XmlCDATANaturalImpl extends XmlCDATASyntheticImpl implements XmlNodeNatural, XmlElementChildNatural {
   XmlCDATANaturalImpl(
     this.source,
     String text,
   ) : super(text);
+
+  @override
+  Z matchNaturalElementChild<Z>({
+    required Z Function(XmlTextNaturalImpl) text,
+    required Z Function(XmlElementNaturalImpl) element,
+    required Z Function(XmlProcessingNaturalImpl) processing,
+    required Z Function(XmlCommentNaturalImpl) comment,
+    required Z Function(XmlCDATANaturalImpl) cdata,
+  }) =>
+      cdata(this);
 
   @override
   final XmlSourceRange source;
@@ -64,12 +74,22 @@ class XmlAttributeNaturalImpl extends XmlAttributeSyntheticImpl implements XmlNo
   final XmlSourceRange source;
 }
 
-class XmlCommentNaturalImpl extends XmlCommentSyntheticImpl implements XmlNodeNatural {
+class XmlCommentNaturalImpl extends XmlCommentSyntheticImpl
+    implements XmlNodeNatural, XmlElementChildNatural {
   XmlCommentNaturalImpl(
     this.source,
     String text,
   ) : super(text);
 
+  @override
+  Z matchNaturalElementChild<Z>({
+    required Z Function(XmlTextNaturalImpl) text,
+    required Z Function(XmlElementNaturalImpl) element,
+    required Z Function(XmlProcessingNaturalImpl) processing,
+    required Z Function(XmlCommentNaturalImpl) comment,
+    required Z Function(XmlCDATANaturalImpl) cdata,
+  }) =>
+      comment(this);
   @override
   final XmlSourceRange source;
 }
@@ -79,7 +99,6 @@ class XmlDeclarationNaturalImpl extends XmlDeclarationSyntheticImpl implements X
     this.source,
     Iterable<XmlAttributeNaturalImpl> attributesIterable,
   ) : super(attributesIterable);
-
 
   @override
   final XmlSourceRange source;
@@ -95,20 +114,34 @@ class XmlDoctypeNaturalImpl extends XmlDoctypeSyntheticImpl implements XmlNodeNa
   final XmlSourceRange source;
 }
 
-class XmlElementNaturalImpl extends XmlElementSyntheticImpl implements XmlNodeNatural {
+class XmlElementNaturalImpl extends XmlElementSyntheticImpl
+    implements XmlNodeNatural, XmlElementChildNatural {
+  // TODO the parent won't need to validate that children have the correct type once synthetic hierarchy also has an element child type.
   XmlElementNaturalImpl(
     this.source,
     XmlName name,
     Iterable<XmlAttribute> attributesIterable,
-    Iterable<XmlNode> childrenIterable,
+    this.childrenNodes,
     bool isSelfClosing,
-  ) : super(name, attributesIterable, childrenIterable, isSelfClosing);
+  ) : super(name, attributesIterable, childrenNodes, isSelfClosing);
 
+  final Iterable<XmlElementChildNatural> childrenNodes;
   @override
   final XmlSourceRange source;
+
+  @override
+  Z matchNaturalElementChild<Z>({
+    required Z Function(XmlTextNaturalImpl) text,
+    required Z Function(XmlElementNaturalImpl) element,
+    required Z Function(XmlProcessingNaturalImpl) processing,
+    required Z Function(XmlCommentNaturalImpl) comment,
+    required Z Function(XmlCDATANaturalImpl) cdata,
+  }) =>
+      element(this);
 }
 
-class XmlProcessingNaturalImpl extends XmlProcessingSyntheticImpl implements XmlNodeNatural {
+class XmlProcessingNaturalImpl extends XmlProcessingSyntheticImpl
+    implements XmlNodeNatural, XmlElementChildNatural {
   XmlProcessingNaturalImpl(
     this.source,
     String target,
@@ -116,21 +149,39 @@ class XmlProcessingNaturalImpl extends XmlProcessingSyntheticImpl implements Xml
   ) : super(target, text);
 
   @override
+  Z matchNaturalElementChild<Z>({
+    required Z Function(XmlTextNaturalImpl) text,
+    required Z Function(XmlElementNaturalImpl) element,
+    required Z Function(XmlProcessingNaturalImpl) processing,
+    required Z Function(XmlCommentNaturalImpl) comment,
+    required Z Function(XmlCDATANaturalImpl) cdata,
+  }) =>
+      processing(this);
+
+  @override
   final XmlSourceRange source;
 }
 
-/// XML text node.
-class XmlTextNaturalImpl extends XmlTextSyntheticImpl implements XmlNodeNatural {
+class XmlTextNaturalImpl extends XmlTextSyntheticImpl implements XmlNodeNatural, XmlElementChildNatural {
   XmlTextNaturalImpl(
     this.source,
     String text,
   ) : super(text);
 
   @override
+  Z matchNaturalElementChild<Z>({
+    required Z Function(XmlTextNaturalImpl) text,
+    required Z Function(XmlElementNaturalImpl) element,
+    required Z Function(XmlProcessingNaturalImpl) processing,
+    required Z Function(XmlCommentNaturalImpl) comment,
+    required Z Function(XmlCDATANaturalImpl) cdata,
+  }) =>
+      text(this);
+
+  @override
   final XmlSourceRange source;
 }
 
-/// An XML entity name with a prefix.
 class XmlPrefixNameNaturalImpl extends XmlPrefixNameSyntheticImpl implements XmlNameNatural {
   XmlPrefixNameNaturalImpl(
     this.source,
@@ -141,9 +192,14 @@ class XmlPrefixNameNaturalImpl extends XmlPrefixNameSyntheticImpl implements Xml
 
   @override
   final XmlSourceRange source;
+
+  @override
+  Z matchNaturalName<Z>({
+    required final Z Function(XmlPrefixNameNaturalImpl) prefix,
+    required final Z Function(XmlSimpleNameNaturalImpl) simple,
+  }) => prefix(this);
 }
 
-/// An XML entity name without a prefix.
 class XmlSimpleNameNaturalImpl extends XmlSimpleNameSyntheticImpl implements XmlNameNatural {
   XmlSimpleNameNaturalImpl(
     this.source,
@@ -152,6 +208,12 @@ class XmlSimpleNameNaturalImpl extends XmlSimpleNameSyntheticImpl implements Xml
 
   @override
   final XmlSourceRange source;
+
+  @override
+  Z matchNaturalName<Z>({
+    required final Z Function(XmlPrefixNameNaturalImpl) prefix,
+    required final Z Function(XmlSimpleNameNaturalImpl) simple,
+  }) => simple(this);
 }
 
 class XmlSourceRangeImpl implements XmlSourceRange {

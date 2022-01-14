@@ -1,33 +1,37 @@
 import '../../../xml.dart';
 import '../visitors/node_type.dart';
 import 'base.dart';
+import 'mixin.dart';
 
 class XmlDocumentFragmentSyntheticImpl extends XmlDocumentFragmentBase {
   XmlDocumentFragmentSyntheticImpl([
     Iterable<XmlNode> childrenIterable = const [],
   ]) {
-    children.initialize(this, {
-      XmlNodeType.CDATA,
-      XmlNodeType.COMMENT,
-      XmlNodeType.DECLARATION,
-      XmlNodeType.DOCUMENT_TYPE,
-      XmlNodeType.ELEMENT,
-      XmlNodeType.PROCESSING,
-      XmlNodeType.TEXT,
-    });
     children.addAll(childrenIterable);
   }
 
   @override
-  XmlDocumentFragmentSyntheticImpl copy() =>
-      XmlDocumentFragmentSyntheticImpl(children.map((each) => each.copy()));
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {
+    XmlNodeType.CDATA,
+    XmlNodeType.COMMENT,
+    XmlNodeType.DECLARATION,
+    XmlNodeType.DOCUMENT_TYPE,
+    XmlNodeType.ELEMENT,
+    XmlNodeType.PROCESSING,
+    XmlNodeType.TEXT,
+  });
+
+  @override
+  XmlDocumentFragmentSyntheticImpl copy() => XmlDocumentFragmentSyntheticImpl(
+        children.map((each) => each.copy()),
+      );
 }
 
 class XmlDocumentSyntheticImpl extends XmlDocumentBase {
   XmlDocumentSyntheticImpl(
     Iterable<XmlNode> childrenIterable,
   ) {
-    children.initialize(this, {
+    children = XmlNodeList<XmlNode>(this, {
       XmlNodeType.CDATA,
       XmlNodeType.COMMENT,
       XmlNodeType.DECLARATION,
@@ -35,16 +39,24 @@ class XmlDocumentSyntheticImpl extends XmlDocumentBase {
       XmlNodeType.ELEMENT,
       XmlNodeType.PROCESSING,
       XmlNodeType.TEXT,
-    });
-    children.addAll(childrenIterable);
+    })
+      ..addAll(childrenIterable);
   }
 
   @override
-  XmlDocument copy() => XmlDocumentSyntheticImpl(children.map((each) => each.copy()));
+  late final XmlNodeList<XmlNode> children;
+
+  @override
+  XmlDocument copy() => XmlDocumentSyntheticImpl(
+        children.map((each) => each.copy()),
+      );
 }
 
 class XmlCDATASyntheticImpl extends XmlCDDATABase {
   XmlCDATASyntheticImpl(this.text);
+
+  @override
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {});
 
   @override
   String text;
@@ -63,6 +75,9 @@ class XmlAttributeSyntheticImpl extends XmlAttributeBase {
   }
 
   @override
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {});
+
+  @override
   final XmlName name;
 
   @override
@@ -72,11 +87,18 @@ class XmlAttributeSyntheticImpl extends XmlAttributeBase {
   final XmlAttributeType attributeType;
 
   @override
-  XmlAttribute copy() => XmlAttributeSyntheticImpl(name.copy(), value, attributeType);
+  XmlAttribute copy() => XmlAttributeSyntheticImpl(
+        name.copy(),
+        value,
+        attributeType,
+      );
 }
 
 class XmlCommentSyntheticImpl extends XmlCommentBase {
   XmlCommentSyntheticImpl(this.text);
+
+  @override
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {});
 
   @override
   String text;
@@ -89,20 +111,30 @@ class XmlDeclarationSyntheticImpl extends XmlDeclarationBase {
   XmlDeclarationSyntheticImpl([
     Iterable<XmlAttribute> attributesIterable = const [],
   ]) {
-    attributes.initialize(this, {
-      XmlNodeType.ATTRIBUTE,
-    });
     attributes.addAll(attributesIterable);
   }
 
   @override
-  XmlDeclaration copy() => XmlDeclarationSyntheticImpl(attributes.map((each) => each.copy()));
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {});
+
+  @override
+  late final XmlNodeList<XmlAttribute> attributes = XmlNodeList(this, {
+    XmlNodeType.ATTRIBUTE,
+  });
+
+  @override
+  XmlDeclaration copy() => XmlDeclarationSyntheticImpl(
+        attributes.map((each) => each.copy()),
+      );
 }
 
 class XmlDoctypeSyntheticImpl extends XmlDoctypeBase {
   XmlDoctypeSyntheticImpl(
     this.text,
   );
+
+  @override
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {});
 
   @override
   String text;
@@ -119,19 +151,23 @@ class XmlElementSyntheticImpl extends XmlElementBase {
     this.isSelfClosing = true,
   ]) {
     name.attachParent(this);
-    attributes.initialize(this, {
-      XmlNodeType.ATTRIBUTE,
-    });
     attributes.addAll(attributesIterable);
-    children.initialize(this, {
-      XmlNodeType.CDATA,
-      XmlNodeType.COMMENT,
-      XmlNodeType.ELEMENT,
-      XmlNodeType.PROCESSING,
-      XmlNodeType.TEXT,
-    });
     children.addAll(childrenIterable);
   }
+
+  @override
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {
+    XmlNodeType.CDATA,
+    XmlNodeType.COMMENT,
+    XmlNodeType.ELEMENT,
+    XmlNodeType.PROCESSING,
+    XmlNodeType.TEXT,
+  });
+
+  @override
+  late final XmlNodeList<XmlAttribute> attributes = XmlNodeList(this, {
+    XmlNodeType.ATTRIBUTE,
+  });
 
   @override
   bool isSelfClosing;
@@ -141,7 +177,11 @@ class XmlElementSyntheticImpl extends XmlElementBase {
 
   @override
   XmlElement copy() => XmlElementSyntheticImpl(
-      name.copy(), attributes.map((each) => each.copy()), children.map((each) => each.copy()), isSelfClosing);
+        name.copy(),
+        attributes.map((each) => each.copy()),
+        children.map((each) => each.copy()),
+        isSelfClosing,
+      );
 }
 
 class XmlProcessingSyntheticImpl extends XmlProcessingBase {
@@ -149,6 +189,9 @@ class XmlProcessingSyntheticImpl extends XmlProcessingBase {
     this.target,
     this.text,
   );
+
+  @override
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {});
 
   @override
   String text;
@@ -166,6 +209,9 @@ class XmlTextSyntheticImpl extends XmlTextBase {
   );
 
   @override
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {});
+
+  @override
   String text;
 
   @override
@@ -180,6 +226,9 @@ class XmlPrefixNameSyntheticImpl extends XmlPrefixNameBase {
   );
 
   @override
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {});
+
+  @override
   final String prefix;
 
   @override
@@ -189,7 +238,18 @@ class XmlPrefixNameSyntheticImpl extends XmlPrefixNameBase {
   final String qualified;
 
   @override
-  XmlPrefixName copy() => XmlPrefixNameSyntheticImpl(prefix, local, qualified);
+  XmlPrefixName copy() => XmlPrefixNameSyntheticImpl(
+        prefix,
+        local,
+        qualified,
+      );
+
+  @override
+  Z matchName<Z>({
+    required final Z Function(XmlPrefixName) prefix,
+    required final Z Function(XmlSimpleName) simple,
+  }) =>
+      prefix(this);
 }
 
 class XmlSimpleNameSyntheticImpl extends XmlSimpleNameBase {
@@ -198,10 +258,20 @@ class XmlSimpleNameSyntheticImpl extends XmlSimpleNameBase {
   );
 
   @override
+  late final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>(this, {});
+
+  @override
   final String local;
 
   @override
   XmlSimpleName copy() => XmlSimpleNameSyntheticImpl(local);
+
+  @override
+  Z matchName<Z>({
+    required final Z Function(XmlPrefixName) prefix,
+    required final Z Function(XmlSimpleName) simple,
+  }) =>
+      simple(this);
 }
 
 /// Known attribute names.

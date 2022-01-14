@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/xml.dart';
 import 'package:xml/xml_events.dart';
 
@@ -14,9 +13,11 @@ import 'examples.dart';
 ///  - the code is benchmarked for the duration of [measure].
 ///
 /// The resulting duration is the average time measured to run [function] once.
-double benchmark(Function function,
-    {Duration warmup = const Duration(milliseconds: 200),
-    Duration measure = const Duration(seconds: 2)}) {
+double benchmark(
+  Function function, {
+  Duration warmup = const Duration(milliseconds: 200),
+  Duration measure = const Duration(seconds: 2),
+}) {
   _benchmark(function, warmup);
   return _benchmark(function, measure);
 }
@@ -40,8 +41,7 @@ double _benchmark(Function function, Duration duration) {
 ///
 /// A result of 0 means that both reference and comparison run at the same
 /// speed. A positive number signifies a speedup, a negative one a slowdown.
-double percentChange(double reference, double comparison) =>
-    100 * (reference - comparison) / reference;
+double percentChange(double reference, double comparison) => 100 * (reference - comparison) / reference;
 
 String characterData() {
   const string = '''a&bc<def"gehi'jklm>nopqr''';
@@ -99,8 +99,7 @@ void addBenchmark(XmlBuilder builder, MapEntry<String, String> entry) {
   });
 }
 
-void addMeasure(XmlBuilder builder, String name, double measure,
-    [double? reference]) {
+void addMeasure(XmlBuilder builder, String name, double measure, [double? reference]) {
   builder.element('measure', attributes: {'name': name}, nest: () {
     builder.element('time', nest: measure.toStringAsFixed(6));
     if (reference != null) {

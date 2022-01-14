@@ -2,7 +2,6 @@
 import 'dart:io';
 
 import 'package:args/args.dart' as args;
-import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/xml.dart';
 
 const entityMapping = XmlDefaultEntityMapping.xml();

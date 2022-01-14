@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math' show min, Random;
 
 import 'package:test/test.dart';
-import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/src/xml/visitors/node_type.dart';
 import 'package:xml/src/xml_events/event.dart';
 import 'package:xml/xml.dart';
@@ -12,7 +11,7 @@ import 'assertions.dart';
 import 'examples.dart';
 
 void assertComplete(Iterator<XmlEvent> iterator) {
-  for (var i = 0; i < 2; i++) {
+  for (int i = 0; i < 2; i++) {
     expect(iterator.moveNext(), isFalse);
   }
 }

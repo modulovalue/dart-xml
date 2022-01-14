@@ -10,6 +10,9 @@ export 'src/xml/entities/default_mapping.dart' show defaultEntityMapping, XmlDef
 export 'src/xml/entities/entity_mapping.dart' show XmlEntityMapping;
 export 'src/xml/entities/null_mapping.dart' show XmlNullEntityMapping;
 export 'src/xml/navigation/navigation.dart';
+export 'src/xml/nodes/natural_impl.dart';
+export 'src/xml/nodes/natural_interface.dart';
+export 'src/xml/nodes/parse.dart';
 export 'src/xml/nodes/synthetic_impl.dart';
 export 'src/xml/nodes/synthetic_interface.dart';
 export 'src/xml/parser.dart';

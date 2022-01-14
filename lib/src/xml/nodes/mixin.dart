@@ -6,9 +6,7 @@ import '../utils/name_matcher.dart';
 import '../utils/namespace.dart';
 import '../utils/predicate.dart';
 import '../visitors/node_type.dart';
-import 'parse.dart';
 
-/// Immutable abstract XML node.
 mixin XmlNodeMixin implements XmlNode {
   @override
   XmlNode copy();
@@ -26,9 +24,6 @@ mixin XmlNodeMixin implements XmlNode {
   set innerXml(String value) => children
     ..clear()
     ..add(parseXmlDocumentFragment(value));
-
-  @override
-  final XmlNodeList<XmlNode> children = XmlNodeList<XmlNode>();
 
   @override
   Iterable<XmlElement> get childElements => children.whereType<XmlElement>();
@@ -127,6 +122,12 @@ mixin XmlNodeMixin implements XmlNode {
   XmlAttribute? getAttributeNode(String name, {String? namespace}) => null;
 
   @override
+  String? getAttributeStrictQualified(String qualifiedName) => null;
+
+  @override
+  XmlAttribute? getAttributeNodeStrictQualified(String qualifiedName) => null;
+
+  @override
   void setAttribute(String name, String? value, {String? namespace}) =>
       throw UnsupportedError('$this has no attributes.');
 
@@ -159,7 +160,6 @@ mixin XmlNodeMixin implements XmlNode {
   String toString() => toXmlString();
 }
 
-/// Mixin for nodes with a parent.
 mixin XmlParentableMixin implements XmlParentable {
   XmlNode? _parent;
 
@@ -195,15 +195,29 @@ mixin XmlParentableMixin implements XmlParentable {
   }
 }
 
-/// Mixin for nodes with attributes.
 mixin XmlAttributesMixin implements XmlAttributes, XmlNode {
   @override
-  final XmlNodeList<XmlAttribute> attributes = XmlNodeList<XmlAttribute>();
+  XmlNodeList<XmlAttribute> get attributes;
 
   @override
   String? getAttribute(String name, {String? namespace}) =>
       getAttributeNode(name, namespace: namespace)?.value;
 
+  @override
+  XmlAttribute? getAttributeNodeStrictQualified(String qualifiedName) {
+    for (final attribute in attributes) {
+      if (attribute.name.qualified == qualifiedName) {
+        return attribute;
+      }
+    }
+    return null;
+  }
+
+  @override
+  String? getAttributeStrictQualified(String qualifiedName) =>
+      getAttributeNodeStrictQualified(qualifiedName)?.value;
+
+  // TODO needs a first class name+namespace type.
   @override
   XmlAttribute? getAttributeNode(String name, {String? namespace}) {
     final tester = createNameMatcher(name, namespace);
@@ -382,18 +396,13 @@ mixin XmlNodeNavigateableMixin implements XmlNode {
 
 /// Mutable list of XmlNodes, manages the parenting of the nodes.
 class XmlNodeList<E extends XmlNode> extends DelegatingList<E> {
-  XmlNodeList() : super(<E>[]);
+  XmlNodeList(
+    this._parent,
+    this._nodeTypes,
+  ) : super(<E>[]);
 
-  late final XmlNode _parent;
-  late final Set<XmlNodeType> _nodeTypes;
-
-  /// Internal initializer of the node list with parent and supported
-  /// node types.
-  @internal
-  void initialize(XmlNode parent, Set<XmlNodeType> nodeTypes) {
-    _parent = parent;
-    _nodeTypes = nodeTypes;
-  }
+  final XmlNode _parent;
+  final Set<XmlNodeType> _nodeTypes;
 
   @override
   void operator []=(int index, E value) {

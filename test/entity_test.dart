@@ -1,5 +1,4 @@
 import 'package:test/test.dart';
-import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/src/xml/utils/character_data_parser.dart';
 import 'package:xml/xml.dart';
 
@@ -9,7 +8,6 @@ void expectDecode(XmlEntityMapping mapping, String input, String output) {
           .rootElement
           .text;
   expect(nodeText, output, reason: 'parser decoding');
-
   final entityText = mapping.decode(input);
   expect(entityText, output, reason: 'entity decoding');
 }
@@ -144,12 +142,10 @@ void testDefaultMapping(XmlEntityMapping entityMapping) {
       final result1 = parser.parse('');
       expect(result1.isFailure, isTrue);
       expect(result1.position, 0);
-
       final result2 = parser.parse('a');
       expect(result2.isSuccess, isTrue);
       expect(result2.position, 1);
       expect(result2.value, 'a');
-
       final result3 = parser.parse('ab');
       expect(result3.isSuccess, isTrue);
       expect(result3.position, 2);
@@ -159,12 +155,10 @@ void testDefaultMapping(XmlEntityMapping entityMapping) {
       final result1 = parser.parse('*');
       expect(result1.isFailure, isTrue);
       expect(result1.position, 0);
-
       final result2 = parser.parse('a*');
       expect(result2.isSuccess, isTrue);
       expect(result2.position, 1);
       expect(result2.value, 'a');
-
       final result3 = parser.parse('ab*');
       expect(result3.isSuccess, isTrue);
       expect(result3.position, 2);
@@ -173,20 +167,16 @@ void testDefaultMapping(XmlEntityMapping entityMapping) {
     test('fast parse without stopper', () {
       final result1 = parser.fastParseOn('', 0);
       expect(result1, -1);
-
       final result2 = parser.fastParseOn('a', 0);
       expect(result2, 1);
-
       final result3 = parser.fastParseOn('ab', 0);
       expect(result3, 2);
     });
     test('fast parse with stopper', () {
       final result1 = parser.fastParseOn('*', 0);
       expect(result1, -1);
-
       final result2 = parser.fastParseOn('a*', 0);
       expect(result2, 1);
-
       final result3 = parser.fastParseOn('ab*', 0);
       expect(result3, 2);
     });

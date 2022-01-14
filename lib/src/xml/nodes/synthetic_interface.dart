@@ -90,38 +90,6 @@ abstract class XmlNode implements XmlParentable, XmlAttributes, XmlNodeNavigatea
   /// Replaces the children of this node with text contents.
   set innerText(String value);
 
-  @override
-  List<XmlAttribute> get attributes;
-
-  @override
-  String? getAttribute(String name, {String? namespace});
-
-  @override
-  XmlAttribute? getAttributeNode(String name, {String? namespace});
-
-  @override
-  void setAttribute(String name, String? value, {String? namespace});
-
-  @override
-  void removeAttribute(String name, {String? namespace});
-
-  @override
-  XmlNode? get parent;
-
-  @override
-  bool get hasParent;
-
-  @override
-  void replace(XmlNode other);
-
-  @override
-  @internal
-  void attachParent(XmlNode parent);
-
-  @override
-  @internal
-  void detachParent(XmlNode parent);
-
   /// Dispatch the invocation depending on this type to the [visitor].
   T accept<T>(XmlVisitor<T> visitor);
 }
@@ -383,6 +351,11 @@ abstract class XmlName implements XmlNode {
 
   @override
   XmlName copy();
+
+  Z matchName<Z>({
+    required final Z Function(XmlPrefixName) prefix,
+    required final Z Function(XmlSimpleName) simple,
+  });
 }
 
 /// Base interface for nodes with a parent.
@@ -413,8 +386,12 @@ abstract class XmlAttributes {
   /// Return the attribute value with the given `name`, or `null`.
   String? getAttribute(String name, {String? namespace});
 
+  String? getAttributeStrictQualified(String qualifiedName);
+
   /// Return the attribute node with the given `name`, or `null`.
   XmlAttribute? getAttributeNode(String name, {String? namespace});
+
+  XmlAttribute? getAttributeNodeStrictQualified(String qualifiedName);
 
   /// Set the attribute value with the given fully qualified `name` to `value`.
   /// If an attribute with the name already exist, its value is updated.
@@ -423,6 +400,24 @@ abstract class XmlAttributes {
 
   /// Removes the attribute value with the given fully qualified `name`.
   void removeAttribute(String name, {String? namespace});
+}
+
+/// Abstract XML data node.
+abstract class XmlData {
+  /// The textual value of this node.
+  abstract String text;
+}
+
+/// Mixin for all nodes with a name.
+abstract class XmlHasName {
+  /// Return the name of the node.
+  XmlName get name;
+}
+
+abstract class XmlSourceRange {
+  int get offset;
+
+  int get end;
 }
 
 /// Basic visitor over [XmlNode]s.
@@ -459,22 +454,4 @@ abstract class XmlVisitor<T> {
 
   /// Visit an [XmlAttribute] node.
   T visitAttribute(XmlAttribute node);
-}
-
-/// Abstract XML data node.
-abstract class XmlData {
-  /// The textual value of this node.
-  abstract String text;
-}
-
-/// Mixin for all nodes with a name.
-abstract class XmlHasName {
-  /// Return the name of the node.
-  XmlName get name;
-}
-
-abstract class XmlSourceRange {
-  int get offset;
-
-  int get end;
 }

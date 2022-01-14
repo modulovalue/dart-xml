@@ -1,5 +1,4 @@
 import 'package:test/test.dart';
-import 'package:xml/src/xml/nodes/parse.dart';
 import 'package:xml/xml.dart';
 
 void main() {

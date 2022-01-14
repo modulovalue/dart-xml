@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:args/args.dart' as args;
 import 'package:petitparser/petitparser.dart';
-import 'package:xml/src/xml/nodes/natural_impl.dart';
 import 'package:xml/xml.dart';
 
 final args.ArgParser argumentParser = args.ArgParser()
@@ -98,8 +97,7 @@ final Map<XmlNode, Token<dynamic>> tokens = {};
 final Parser parser = XmlTreeGrammarDefinitionRegisterPosition(defaultEntityMapping).build<dynamic>();
 
 class XmlTreeGrammarDefinitionRegisterPosition extends XmlTreeGrammarDefinition {
-  XmlTreeGrammarDefinitionRegisterPosition(XmlEntityMapping entityMapping)
-      : super(entityMapping);
+  XmlTreeGrammarDefinitionRegisterPosition(XmlEntityMapping entityMapping) : super(entityMapping);
 
   @override
   Parser<XmlCommentNaturalImpl> comment() => collectPosition(super.comment().cast());

@@ -2,8 +2,6 @@ import 'package:petitparser/petitparser.dart';
 
 import '../../../xml.dart';
 import '../utils/cache.dart';
-import 'natural_impl.dart';
-import 'natural_interface.dart';
 
 /// Return an [XmlDocument] for the given [input] string, or throws an
 /// [XmlParserException] if the input is invalid.
