@@ -68,8 +68,15 @@ class XmlAttributeNaturalImpl extends XmlAttributeSyntheticImpl implements XmlNo
     XmlName name,
     String value,
     XmlAttributeType attributeType,
+    this.source_equals_sign,
+    this.source_key,
+    this.source_value,
   ) : super(name, value, attributeType);
 
+
+  final XmlSourceRange source_equals_sign;
+  final XmlSourceRange source_key;
+  final XmlSourceRange source_value;
   @override
   final XmlSourceRange source;
 }

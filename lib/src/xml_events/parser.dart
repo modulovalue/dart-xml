@@ -74,9 +74,9 @@ class XmlEventGrammarDefinition extends GrammarDefinition
   @override
   Parser<XmlEventAttribute> attribute() => attributeProd().token().map(
         (each) => XmlEventAttribute(
-          each.value[0] as String,
-          (each.value[4] as List<dynamic>)[1] as String,
-          (each.value[4] as List<dynamic>)[0] == '"'
+          (each.value[0] as Token<dynamic>).value as String,
+          ((each.value[4] as Token<dynamic>).value as List<dynamic>)[1] as String,
+          ((each.value[4] as Token<dynamic>).value as List<dynamic>)[0] == '"'
               ? XmlAttributeType.DOUBLE_QUOTE
               : XmlAttributeType.SINGLE_QUOTE,
           _range(each),

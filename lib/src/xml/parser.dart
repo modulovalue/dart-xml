@@ -42,9 +42,12 @@ class XmlTreeGrammarDefinition extends GrammarDefinition
         final each = a.value;
         return XmlAttributeNaturalImpl(
           _range(a),
-          each[0] as XmlName,
-          (each[4] as List<dynamic>)[0] as String,
-          (each[4] as List<dynamic>)[1] as XmlAttributeType,
+          (each[0] as Token<dynamic>).value as XmlName,
+          ((each[4] as Token<dynamic>).value as List<dynamic>)[0] as String,
+          ((each[4] as Token<dynamic>).value as List<dynamic>)[1] as XmlAttributeType,
+          _range(a.value[2] as Token<String>),
+          _range<dynamic>(a.value[0] as Token<dynamic>),
+          _range<dynamic>(a.value[4] as Token<dynamic>),
         );
       });
 
@@ -237,11 +240,11 @@ mixin XmlGrammarMixin<
 
   Parser<SPACETEXT> spaceText();
 
-  Parser<List<dynamic>> attributeProd() => ref0<dynamic>(qualified)
+  Parser<List<dynamic>> attributeProd() => ref0<dynamic>(qualified).token()
       .seq(ref0<dynamic>(spaceOptionalProd))
-      .seq(XmlToken.equals.toParser())
+      .seq(XmlToken.equals.toParser().token())
       .seq(ref0<dynamic>(spaceOptionalProd))
-      .seq(ref0<dynamic>(attributeValueProd));
+      .seq(ref0<dynamic>(attributeValueProd).token());
 
   Parser<List<dynamic>> attributesProd() =>
       ref0<dynamic>(spaceProd).seq(ref0<dynamic>(attribute)).pick(1).star();
