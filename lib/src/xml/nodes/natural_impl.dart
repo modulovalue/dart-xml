@@ -73,7 +73,6 @@ class XmlAttributeNaturalImpl extends XmlAttributeSyntheticImpl implements XmlNo
     this.source_value,
   ) : super(name, value, attributeType);
 
-
   final XmlSourceRange source_equals_sign;
   final XmlSourceRange source_key;
   final XmlSourceRange source_value;
@@ -130,12 +129,14 @@ class XmlElementNaturalImpl extends XmlElementSyntheticImpl
     Iterable<XmlAttribute> attributesIterable,
     this.childrenNodes,
     bool isSelfClosing,
+    this.style,
   ) : super(name, attributesIterable, childrenNodes, isSelfClosing);
 
   final Iterable<XmlElementChildNatural> childrenNodes;
   @override
   final XmlSourceRange source;
 
+  final Elementype style;
   @override
   Z matchNaturalElementChild<Z>({
     required Z Function(XmlTextNaturalImpl) text,
@@ -145,6 +146,43 @@ class XmlElementNaturalImpl extends XmlElementSyntheticImpl
     required Z Function(XmlCDATANaturalImpl) cdata,
   }) =>
       element(this);
+}
+
+abstract class Elementype {
+  R match<R>({
+    required final R Function(ElementypeSelfclosing) selfclosing,
+    required final R Function(ElementypeNonselfclosing) nonselfclosing,
+  });
+}
+
+class ElementypeSelfclosing implements Elementype {
+  final XmlSourceRange source_tag;
+
+  const ElementypeSelfclosing({
+    required final this.source_tag,
+  });
+
+  @override
+  R match<R>({
+    required final R Function(ElementypeSelfclosing p1) selfclosing,
+    required final R Function(ElementypeNonselfclosing p1) nonselfclosing,
+  }) => selfclosing(this);
+}
+
+class ElementypeNonselfclosing implements Elementype {
+  final XmlSourceRange source_tag_left;
+  final XmlSourceRange source_tag_right;
+
+  const ElementypeNonselfclosing({
+    required final this.source_tag_left,
+    required final this.source_tag_right,
+  });
+
+  @override
+  R match<R>({
+    required final R Function(ElementypeSelfclosing p1) selfclosing,
+    required final R Function(ElementypeNonselfclosing p1) nonselfclosing,
+  }) => nonselfclosing(this);
 }
 
 class XmlProcessingNaturalImpl extends XmlProcessingSyntheticImpl
@@ -204,7 +242,8 @@ class XmlPrefixNameNaturalImpl extends XmlPrefixNameSyntheticImpl implements Xml
   Z matchNaturalName<Z>({
     required final Z Function(XmlPrefixNameNaturalImpl) prefix,
     required final Z Function(XmlSimpleNameNaturalImpl) simple,
-  }) => prefix(this);
+  }) =>
+      prefix(this);
 }
 
 class XmlSimpleNameNaturalImpl extends XmlSimpleNameSyntheticImpl implements XmlNameNatural {
@@ -220,7 +259,8 @@ class XmlSimpleNameNaturalImpl extends XmlSimpleNameSyntheticImpl implements Xml
   Z matchNaturalName<Z>({
     required final Z Function(XmlPrefixNameNaturalImpl) prefix,
     required final Z Function(XmlSimpleNameNaturalImpl) simple,
-  }) => simple(this);
+  }) =>
+      simple(this);
 }
 
 class XmlSourceRangeImpl implements XmlSourceRange {

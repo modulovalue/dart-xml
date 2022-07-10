@@ -141,31 +141,41 @@ class XmlTreeGrammarDefinition extends GrammarDefinition
   @override
   Parser<XmlElementNaturalImpl> element() => elementProd().token().map((a) {
         final list = a.value;
-        final name = list[1] as XmlName;
+        final name = list[1] as Token<dynamic>;
         final attributes = (list[2] as List<dynamic>).cast<XmlNode>();
-        if (list[4] == XmlToken.closeEndElement) {
+        final dynamic last = list[4];
+        if (last == XmlToken.closeEndElement) {
           return XmlElementNaturalImpl(
             _range(a),
-            name,
+            name.value as XmlName,
             attributes.cast(),
             [],
             true,
+            ElementypeSelfclosing(
+              source_tag: _range<dynamic>(name),
+            ),
           );
         } else {
-          if (name == (list[4] as List<dynamic>)[3]) {
-            final children = ((list[4] as List<dynamic>)[1] as List<dynamic>).cast<XmlElementChildNatural>();
+          final fourth = last as List<dynamic>;
+          final name_right = fourth[3] as Token<dynamic>;
+          if (name.value == name_right.value) {
+            final children = (fourth[1] as List<dynamic>).cast<XmlElementChildNatural>();
             return XmlElementNaturalImpl(
               _range(a),
-              name,
+              name.value as XmlName,
               attributes.cast(),
               children,
               children.isNotEmpty,
+              ElementypeNonselfclosing(
+                source_tag_left: _range<dynamic>(name),
+                source_tag_right: _range<dynamic>(name_right),
+              ),
             );
           } else {
             final token = (list[4] as List<dynamic>)[2] as Token<dynamic>;
             final lineAndColumn = Token.lineAndColumnOf(token.buffer, token.start);
             throw XmlParserException(
-              'Expected </${list[1]}>, but found </${(list[4] as List<dynamic>)[3]}>',
+              'Expected </${(list[1] as Token<dynamic>).value}>, but found </${name_right.value}>',
               buffer: token.buffer,
               position: token.start,
               line: lineAndColumn[0],
@@ -240,7 +250,8 @@ mixin XmlGrammarMixin<
 
   Parser<SPACETEXT> spaceText();
 
-  Parser<List<dynamic>> attributeProd() => ref0<dynamic>(qualified).token()
+  Parser<List<dynamic>> attributeProd() => ref0<dynamic>(qualified)
+      .token()
       .seq(ref0<dynamic>(spaceOptionalProd))
       .seq(XmlToken.equals.toParser().token())
       .seq(ref0<dynamic>(spaceOptionalProd))
@@ -323,14 +334,14 @@ mixin XmlGrammarMixin<
 
   Parser<List<dynamic>> elementProd() => XmlToken.openElement
       .toParser()
-      .seq(ref0<dynamic>(qualified))
+      .seq(ref0<dynamic>(qualified).token())
       .seq(ref0<dynamic>(attributesProd))
       .seq(ref0<dynamic>(spaceOptionalProd))
       .seq(XmlToken.closeEndElement.toParser().or(XmlToken.closeElement
           .toParser()
           .seq(ref0<dynamic>(contentProd))
           .seq(XmlToken.openEndElement.toParser().token())
-          .seq(ref0<dynamic>(qualified))
+          .seq(ref0<dynamic>(qualified).token())
           .seq(ref0<dynamic>(spaceOptionalProd))
           .seq(XmlToken.closeElement.toParser())));
 
