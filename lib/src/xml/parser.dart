@@ -141,10 +141,11 @@ class XmlTreeGrammarDefinition extends GrammarDefinition
   @override
   Parser<XmlElementNaturalImpl> element() => elementProd().token().map((a) {
         final list = a.value;
+        final left_croc = list[0] as Token<dynamic>;
         final name = list[1] as Token<dynamic>;
         final attributes = (list[2] as List<dynamic>).cast<XmlNode>();
         final dynamic last = list[4];
-        if (last == XmlToken.closeEndElement) {
+        if (last is Token<dynamic> && last.value == XmlToken.closeEndElement) {
           return XmlElementNaturalImpl(
             _range(a),
             name.value as XmlName,
@@ -153,6 +154,8 @@ class XmlTreeGrammarDefinition extends GrammarDefinition
             true,
             ElementypeSelfclosing(
               source_tag: _range<dynamic>(name),
+              source_left_croc: _range<dynamic>(left_croc),
+              source_right_croc: _range<dynamic>(last),
             ),
           );
         } else {
@@ -167,8 +170,12 @@ class XmlTreeGrammarDefinition extends GrammarDefinition
               children,
               children.isNotEmpty,
               ElementypeNonselfclosing(
+                source_left_left_croc: _range<dynamic>(left_croc),
                 source_tag_left: _range<dynamic>(name),
+                source_left_right_croc: _range<dynamic>(last[0] as Token<dynamic>),
+                source_right_left_croc: _range<dynamic>(fourth[2] as Token<dynamic>),
                 source_tag_right: _range<dynamic>(name_right),
+                source_right_right_croc: _range<dynamic>(fourth[5] as Token<dynamic>),
               ),
             );
           } else {
@@ -333,17 +340,17 @@ mixin XmlGrammarMixin<
       .castList<dynamic>();
 
   Parser<List<dynamic>> elementProd() => XmlToken.openElement
-      .toParser()
+      .toParser().token()
       .seq(ref0<dynamic>(qualified).token())
       .seq(ref0<dynamic>(attributesProd))
       .seq(ref0<dynamic>(spaceOptionalProd))
-      .seq(XmlToken.closeEndElement.toParser().or(XmlToken.closeElement
-          .toParser()
+      .seq(XmlToken.closeEndElement.toParser().token().or(XmlToken.closeElement
+          .toParser().token()
           .seq(ref0<dynamic>(contentProd))
           .seq(XmlToken.openEndElement.toParser().token())
           .seq(ref0<dynamic>(qualified).token())
           .seq(ref0<dynamic>(spaceOptionalProd))
-          .seq(XmlToken.closeElement.toParser())));
+          .seq(XmlToken.closeElement.toParser().token())));
 
   Parser<List<dynamic>> processingProd() => XmlToken.openProcessing
       .toParser()

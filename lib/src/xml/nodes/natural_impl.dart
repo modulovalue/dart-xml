@@ -156,11 +156,15 @@ abstract class Elementype {
 }
 
 class ElementypeSelfclosing implements Elementype {
-  final XmlSourceRange source_tag;
-
   const ElementypeSelfclosing({
     required final this.source_tag,
+    required final this.source_left_croc,
+    required final this.source_right_croc,
   });
+
+  final XmlSourceRange source_tag;
+  final XmlSourceRange source_left_croc;
+  final XmlSourceRange source_right_croc;
 
   @override
   R match<R>({
@@ -170,13 +174,21 @@ class ElementypeSelfclosing implements Elementype {
 }
 
 class ElementypeNonselfclosing implements Elementype {
-  final XmlSourceRange source_tag_left;
-  final XmlSourceRange source_tag_right;
-
   const ElementypeNonselfclosing({
     required final this.source_tag_left,
+    required final this.source_left_left_croc,
+    required final this.source_left_right_croc,
     required final this.source_tag_right,
+    required final this.source_right_left_croc,
+    required final this.source_right_right_croc,
   });
+
+  final XmlSourceRange source_tag_left;
+  final XmlSourceRange source_left_left_croc;
+  final XmlSourceRange source_left_right_croc;
+  final XmlSourceRange source_tag_right;
+  final XmlSourceRange source_right_left_croc;
+  final XmlSourceRange source_right_right_croc;
 
   @override
   R match<R>({
