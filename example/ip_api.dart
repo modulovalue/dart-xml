@@ -1,4 +1,6 @@
 /// IP Geolocation API using ip-api.com.
+// ignore_for_file: prefer_final_parameters
+
 import 'dart:convert';
 import 'dart:io';
 

@@ -1,4 +1,6 @@
 /// XML pretty printer and highlighter.
+// ignore_for_file: prefer_final_parameters
+
 import 'dart:io';
 
 import 'package:args/args.dart' as args;

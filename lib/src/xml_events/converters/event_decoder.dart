@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import 'dart:convert' show Converter, StringConversionSink, StringConversionSinkBase;
 
 import 'package:petitparser/petitparser.dart';

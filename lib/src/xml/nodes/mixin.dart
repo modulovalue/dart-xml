@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import 'package:collection/collection.dart' show DelegatingList;
 import 'package:meta/meta.dart';
 

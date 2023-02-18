@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import 'package:petitparser/petitparser.dart';
 
 import '../../../xml.dart';

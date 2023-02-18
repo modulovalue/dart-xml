@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import '../nodes/parse.dart';
 import '../nodes/synthetic_impl.dart';
 import '../nodes/synthetic_interface.dart';

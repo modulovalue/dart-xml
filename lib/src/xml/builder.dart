@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import 'dart:collection';
 
 import 'entities/entity_mapping.dart';

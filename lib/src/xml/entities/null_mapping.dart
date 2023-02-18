@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import '../utils/attribute_type.dart';
 import 'entity_mapping.dart';
 

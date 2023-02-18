@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import 'dart:io';
 
 import 'package:xml/xml.dart';

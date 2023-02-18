@@ -1,4 +1,6 @@
 /// XML position printer.
+// ignore_for_file: prefer_final_parameters
+
 import 'dart:io';
 import 'dart:math';
 

@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import 'package:test/test.dart';
 import 'package:xml/src/xml/utils/character_data_parser.dart';
 import 'package:xml/xml.dart';

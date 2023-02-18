@@ -1,4 +1,6 @@
 /// Function to populate the cache.
+// ignore_for_file: prefer_final_parameters
+
 typedef XmlLoader<K, V> = V Function(K key);
 
 /// Simple FIFO cache.

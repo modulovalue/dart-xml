@@ -1,5 +1,7 @@
 /// Dart XML Events is an event based library to asynchronously parse XML
 /// documents and to convert them to other representations.
+// ignore_for_file: prefer_final_parameters
+
 import 'src/xml/entities/default_mapping.dart';
 import 'src/xml/entities/entity_mapping.dart';
 import 'src/xml_events/event.dart';

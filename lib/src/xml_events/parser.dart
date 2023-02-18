@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import 'package:petitparser/petitparser.dart';
 
 import '../xml/entities/entity_mapping.dart';
@@ -31,7 +33,7 @@ class XmlEventGrammarDefinition extends GrammarDefinition
   final XmlEntityMapping entityMapping;
 
   @override
-  Parser start() => ref0(characterData)
+  Parser<dynamic> start() => ref0(characterData)
       .or(ref0<dynamic>(startElement))
       .or(ref0<dynamic>(endElement))
       .or(ref0<dynamic>(comment))

@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_final, prefer_final_parameters
+
 import '../utils/attribute_type.dart';
 import 'natural_interface.dart';
 import 'synthetic_impl.dart';

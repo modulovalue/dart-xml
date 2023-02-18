@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import 'package:test/test.dart';
 import 'package:xml/src/xml/visitors/node_type.dart';
 import 'package:xml/src/xml_events/event.dart';

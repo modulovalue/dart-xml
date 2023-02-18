@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import '../entities/default_mapping.dart';
 import '../entities/entity_mapping.dart';
 import '../nodes/synthetic_interface.dart';

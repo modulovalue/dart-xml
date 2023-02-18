@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import 'dart:convert' show Codec, Converter;
 
 import '../../xml/entities/entity_mapping.dart';

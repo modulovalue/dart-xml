@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_parameters
+
 import '../../../xml.dart';
 import '../visitors/node_type.dart';
 import 'base.dart';
