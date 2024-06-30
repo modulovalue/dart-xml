@@ -1,8 +1,8 @@
-name: xml
+name: xml2
 version: 5.4.0
 
 description: A lightweight library for parsing, traversing, querying, transforming and building XML documents.
-homepage: https://github.com/renggli/dart-xml
+homepage: https://github.com/modulovalue/dart-xml
 
 environment:
   sdk: '>=2.15.0-0 <3.0.0'

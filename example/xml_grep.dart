@@ -4,7 +4,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart' as args;
-import 'package:xml/src/xml/nodes/parse.dart';
+import 'package:xml2/src/xml/nodes/parse.dart';
 
 final args.ArgParser argumentParser = args.ArgParser()
   ..addOption(

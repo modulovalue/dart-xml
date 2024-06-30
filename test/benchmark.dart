@@ -2,8 +2,8 @@
 
 import 'dart:io';
 
-import 'package:xml/xml.dart';
-import 'package:xml/xml_events.dart';
+import 'package:xml2/xml.dart';
+import 'package:xml2/xml_events.dart';
 
 import 'examples.dart';
 

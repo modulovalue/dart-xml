@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
-import 'package:xml/src/xml/visitors/node_type.dart';
-import 'package:xml/xml.dart';
+import 'package:xml2/src/xml/visitors/node_type.dart';
+import 'package:xml2/xml.dart';
 
 import 'assertions.dart';
 

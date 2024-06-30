@@ -66,7 +66,7 @@ class XmlEventGrammarDefinition extends GrammarDefinition
       .token()
       .map(
         (each) => XmlEndElementEvent(
-          (each.value)[1] as String,
+          each.value[1] as String,
           _range(each),
         ),
       );

@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'dart:math' show min, Random;
 
 import 'package:test/test.dart';
-import 'package:xml/src/xml/visitors/node_type.dart';
-import 'package:xml/src/xml_events/event.dart';
-import 'package:xml/xml.dart';
-import 'package:xml/xml_events.dart';
+import 'package:xml2/src/xml/visitors/node_type.dart';
+import 'package:xml2/src/xml_events/event.dart';
+import 'package:xml2/xml.dart';
+import 'package:xml2/xml_events.dart';
 
 import 'assertions.dart';
 import 'examples.dart';

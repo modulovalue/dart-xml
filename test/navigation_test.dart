@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_final_parameters
 
 import 'package:test/test.dart';
-import 'package:xml/src/xml/nodes/parse.dart';
+import 'package:xml2/src/xml/nodes/parse.dart';
 
 void verifyIterator<T>(Iterable<T> iterable) {
   final iterator = iterable.iterator;

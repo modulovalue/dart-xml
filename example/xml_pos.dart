@@ -6,7 +6,7 @@ import 'dart:math';
 
 import 'package:args/args.dart' as args;
 import 'package:petitparser/petitparser.dart';
-import 'package:xml/xml.dart';
+import 'package:xml2/xml.dart';
 
 final args.ArgParser argumentParser = args.ArgParser()
   ..addOption(

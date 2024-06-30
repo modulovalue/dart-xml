@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:xml/xml.dart';
+import 'package:xml2/xml.dart';
 
 void main() {
   test('default namespace', () {

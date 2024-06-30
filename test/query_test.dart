@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:xml/src/xml/nodes/parse.dart';
+import 'package:xml2/src/xml/nodes/parse.dart';
 
 import 'examples.dart';
 

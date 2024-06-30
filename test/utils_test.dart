@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_final_parameters
 
 import 'package:test/test.dart';
-import 'package:xml/src/xml/utils/cache.dart';
+import 'package:xml2/src/xml/utils/cache.dart';
 
 void main() {
   group('cache', () {

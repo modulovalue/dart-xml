@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_final_parameters
 
 import 'package:test/test.dart';
-import 'package:xml/src/xml/visitors/node_type.dart';
-import 'package:xml/src/xml_events/event.dart';
-import 'package:xml/xml.dart';
-import 'package:xml/xml_events.dart';
+import 'package:xml2/src/xml/visitors/node_type.dart';
+import 'package:xml2/src/xml_events/event.dart';
+import 'package:xml2/xml.dart';
+import 'package:xml2/xml_events.dart';
 
 const isXmlParserException = TypeMatcher<XmlParserException>();
 const isXmlNodeTypeException = TypeMatcher<XmlNodeTypeException>();
@@ -335,7 +335,7 @@ void assertVisitorInvariants(XmlNode xml) {
   for (final node in [xml, ...xml.descendants]) {
     expect(node.accept(visitor), isNull);
     if (node is XmlHasName) {
-      expect(((node as XmlHasName).name).accept(visitor), isNull);
+      expect((node as XmlHasName).name.accept(visitor), isNull);
     }
   }
 }
